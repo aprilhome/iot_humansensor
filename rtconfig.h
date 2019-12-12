@@ -84,7 +84,6 @@
 #define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
 #define RT_USING_ADC
-#define RT_USING_PWM
 #define RT_USING_SPI
 
 /* Using WiFi */
@@ -180,39 +179,30 @@
 #define BSP_USING_UART
 #define BSP_USING_UART1
 #define BSP_USING_UART2
-#define BSP_USING_UART3
 #define BSP_USING_UART4
-#define BSP_USING_UART5
 #define BSP_USING_LPUART1
 #define BSP_USING_ON_CHIP_FLASH
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
-#define BSP_USING_SPI2
 #define BSP_USING_I2C
 #define BSP_USING_I2C1
 
-/* Notice: PB8 --> 24; PB9 --> 25 */
+/* Notice: PB6 --> 22; PB7 --> 23 */
 
-#define BSP_I2C1_SCL_PIN 24
-#define BSP_I2C1_SDA_PIN 25
+#define BSP_I2C1_SCL_PIN 22
+#define BSP_I2C1_SDA_PIN 23
+#define BSP_USING_I2C2
+
+/* Notice: PC11 --> 43; PC10 --> 42 */
+
+#define BSP_I2C2_SCL_PIN 43
+#define BSP_I2C2_SDA_PIN 42
 #define BSP_USING_I2C3
 
-/* Notice: PB12 --> 28; PB13 --> 29 */
+/* Notice: PC8 --> 40; PC9 --> 41 */
 
-#define BSP_I2C3_SCL_PIN 28
-#define BSP_I2C3_SDA_PIN 29
-#define BSP_USING_I2C4
-
-/* Notice: PC1 --> 33; PD6 --> 54 */
-
-#define BSP_I2C4_SCL_PIN 54
-#define BSP_I2C4_SDA_PIN 33
-#define BSP_USING_PWM
-#define BSP_USING_PWM4
-#define BSP_USING_PWM4_CH3
-#define BSP_USING_PWM4_CH4
-#define BSP_USING_ADC
-#define BSP_USING_ADC1
+#define BSP_I2C3_SCL_PIN 40
+#define BSP_I2C3_SDA_PIN 41
 
 /* Board extended module Drivers */
 

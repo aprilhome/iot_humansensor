@@ -63,7 +63,7 @@ menu "On-chip Peripheral Drivers"
         if BSP_USING_UART
             config BSP_USING_UART1
                 bool "Enable UART1"
-                default y
+                default n
 
             config BSP_UART1_RX_USING_DMA
                 bool "Enable UART1 RX DMA"
@@ -108,7 +108,7 @@ menu "On-chip Peripheral Drivers"
 				
 			config BSP_USING_LPUART1
                 bool "Enable LPUART1"
-                default n
+                default y
 
             config BSP_LPUART1_RX_USING_DMA
                 bool "Enable LPUART1 RX DMA"
@@ -174,36 +174,52 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_PIN
         if BSP_USING_I2C
 		    menuconfig BSP_USING_I2C1
-                bool "Enable I2C1 BUS (HR&SPO2)"
+                bool "Enable I2C1 BUS (RTC)"
                 default y
                 if BSP_USING_I2C1
-                    comment "Notice: PB8 --> 24; PB9 --> 25" 
+                    comment "Notice: PB6 --> 22; PB7 --> 23" 
                     config BSP_I2C1_SCL_PIN
                         int "i2c1 scl pin number"
                         range 1 176
-                        default 24
+                        default 22
                     config BSP_I2C1_SDA_PIN
                         int "i2c1 sda pin number"
                         range 1 176
-                        default 25
+                        default 23
                 endif
+				
+			menuconfig BSP_USING_I2C2
+                bool "Enable I2C2 BUS (TEMP)"
+                default y
+                if BSP_USING_I2C2
+                    comment "Notice: PC11 --> 43; PC10 --> 42" 
+                    config BSP_I2C2_SCL_PIN
+                        int "i2c2 scl pin number"
+                        range 1 176
+                        default 43
+                    config BSP_I2C2_SDA_PIN
+                        int "I2C2 sda pin number"
+                        range 1 176
+                        default 42
+                endif	
+				
             menuconfig BSP_USING_I2C3
-                bool "Enable I2C3 BUS (TEMP)"
+                bool "Enable I2C3 BUS (HR)"
                 default y
                 if BSP_USING_I2C3
-                    comment "Notice: PB12 --> 28; PB13 --> 29" 
+                    comment "Notice: PC8 --> 40; PC9 --> 41" 
                     config BSP_I2C3_SCL_PIN
                         int "i2c3 scl pin number"
                         range 1 176
-                        default 28
+                        default 40
                     config BSP_I2C3_SDA_PIN
                         int "I2C3 sda pin number"
                         range 1 176
-                        default 29
+                        default 41
                 endif
 
             menuconfig BSP_USING_I2C4
-                bool "Enable I2C4 BUS (RTC)"
+                bool "Enable I2C4 BUS (soft)"
                 default n
                 if BSP_USING_I2C4
                     comment "Notice: PC1 --> 33; PD6 --> 54" 

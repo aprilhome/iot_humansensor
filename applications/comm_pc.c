@@ -400,7 +400,7 @@ void pc_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *arg
 {
     pc_printf("takesample_all\r\n");
     rt_uint8_t reg[33] = {0};
-    read_max30102_reg(reg);
+//    read_max30102_reg(reg);
     for (rt_uint8_t i = 0; i < 33; i++)
     {
         pc_printf("%02x ", reg[i]);
@@ -418,14 +418,14 @@ void pc_takesample_spo2(char *argv1, char *argv2, char *argv3, char *argv4, char
 //    }
     pc_printf("takesample_hr&spo2\r\n");
 //    rt_sem_release(g_max30102_acquire_sem);
-    max30102_acq();
+//    max30102_acq();
 }
 
 void pc_takesample_hr(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
     pc_printf("takesample_hr\r\n");
     rt_uint8_t reg[6] = {0};
-    read_max30102_fifo(reg);
+//    read_max30102_fifo(reg);
     for (rt_uint8_t i = 0; i < 6; i++)
     {
         pc_printf("%02x ", reg[i]);
@@ -443,8 +443,8 @@ void pc_takesample_temp(char *argv1, char *argv2, char *argv3, char *argv4, char
 //    }
 //    float t = reg[0] + 0.0625 * reg[1];
 //    pc_printf("%f ", t);
-    float temp = read_max30205_temperature();
-    pc_printf("temp:%f", temp);
+//    float temp = read_max30205_temperature();
+//    pc_printf("temp:%f", temp);
 }
 
 

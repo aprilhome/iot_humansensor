@@ -73,8 +73,8 @@ typedef struct
   float c_coef3;
   float c_coef4;
 }sys_info_t;
-#define SYSINFO_LEN 126
-#define SYSINFO  (*(sys_info_t *)(257* 1024))
+#define SYSINFO_LEN 256
+#define SYSINFO  (*(sys_info_t *)(640* 1024))
 
 
 #define ERR_CMD  1

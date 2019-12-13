@@ -46,8 +46,10 @@ extern struct fal_flash_dev nor_flash0;
 #ifdef FAL_PART_HAS_TABLE_CFG
 
 #ifdef BSP_USING_ON_CHIP_FLASH
-#define ONCHIP_FLASH_PATITION          {FAL_PART_MAGIC_WROD, "app",   "onchip_flash",   0,           496 * 1024, 0},      \
-                                       {FAL_PART_MAGIC_WROD, "param", "onchip_flash",   496* 1024,   16 * 1024,  0},
+#define ONCHIP_FLASH_PATITION          {FAL_PART_MAGIC_WROD, "bl",       "onchip_flash",   0,           128 * 1024, 0},      \
+                                       {FAL_PART_MAGIC_WROD, "download", "onchip_flash",   128 * 1024,  256 * 1024, 0},      \
+                                       {FAL_PART_MAGIC_WROD, "app",      "onchip_flash",   384 * 1024,  256 * 1024, 0},      \
+                                       {FAL_PART_MAGIC_WROD, "sysinfo",  "onchip_flash",   640 * 1024,    1 * 1024, 0},
 #else
 #define ONCHIP_FLASH_PATITION
 #endif

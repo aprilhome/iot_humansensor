@@ -4,7 +4,7 @@
 #define PC_CMD_LEN_MAX          200
 #define PC_CMD_ARGC_MAX         20
 
-void pc1_execute_thread_entry(void *parameter);
+void pc_execute_thread_entry(void *parameter);
 int  config_uart_pc(const char *name, rt_uint32_t bound);
 
 void pc_checkin(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6);

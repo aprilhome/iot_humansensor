@@ -1,6 +1,7 @@
 /**
   * Copyright (c) 2019, Aprilhome
-  * 
+  * 板上外设配置
+  * -功能模块开关
   * Change Logs:
   * Date           Author       Notes
   * 2019-04-20     Aprilhome    first version

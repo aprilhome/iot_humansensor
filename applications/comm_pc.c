@@ -1,6 +1,10 @@
 /**
   * Copyright (c) 2019, Aprilhome
   * 上位机通讯
+  * -指令格式应为可见字符起始，回车或换行结束，指令参数间以空格分隔；
+  * -可执行列表中两类指令，设置类指令需在待机状态下，读取类指令可任意时刻执行；
+  * -指令异常时可以报错，根据提示信息判断操作是否有误;
+  * -调用时仅需在config_uart_pc配置stm32串口号和波特率即可，打印调用pc_printf;
   * Change Logs:
   * Date           Author       Notes
   * 2019-04-20     Aprilhome    first version

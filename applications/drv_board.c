@@ -34,9 +34,13 @@ void config_switch(void)
     rt_pin_mode(EN_TEMP_PIN, PIN_MODE_OUTPUT); 
     rt_pin_mode(EN_HR_PIN, PIN_MODE_OUTPUT);
     rt_pin_mode(EN_SD_PIN, PIN_MODE_OUTPUT);
+    rt_pin_mode(EN_4G_PIN, PIN_MODE_OUTPUT);
+    rt_pin_mode(EN_GPS_PIN, PIN_MODE_OUTPUT);
     rt_pin_write(EN_TEMP_PIN, PIN_LOW);
     rt_pin_write(EN_HR_PIN, PIN_LOW);
     rt_pin_write(EN_SD_PIN, PIN_LOW);
+    rt_pin_write(EN_4G_PIN, PIN_LOW);
+    rt_pin_write(EN_GPS_PIN, PIN_LOW);
     
     rt_pin_mode(EN_PC_T_PIN, PIN_MODE_OUTPUT); 
     rt_pin_mode(EN_FINSH_T_PIN, PIN_MODE_OUTPUT);

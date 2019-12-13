@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "comm_pc.h"
+#include "drv_board.h"
 #include "conf.h"
 //#include "drv_board.h"
 //#include "drv_max30102.h"
@@ -39,7 +40,6 @@ const struct cmd g_pc_set_cmd[] =
 {
     {"$setid",            pc_set_id},
     {"$setbaudrate",      pc_set_baudrate},
-    {"$setsensor",        pc_set_sensor},
 };
 
 extern sys_info_t g_sysinfo;
@@ -291,13 +291,17 @@ void pc_set_baudrate(char *argv1, char *argv2, char *argv3, char *argv4, char *a
     };
     if (RT_EOK != rt_device_control(g_pc_uart_device, RT_DEVICE_CTRL_CONFIG,(void *)&pc_uart_config)) 
     {
-        pc_printf("control device %d failed!\r\n");
-        return;
+        pc_printf("$err %d\r\n", ERR_PROCESS);
     }
     else 
     {
         g_sysinfo.bound = bound;
-        rt_thread_mdelay(500);
+        rt_thread_mdelay(100);
+        if (config_sysinfo(&g_sysinfo) == -1)
+        {
+            pc_printf("$err %d\r\n",ERR_FLASH);
+            return;
+        }
         pc_printf("$baudrate %ld\r\n", SYSINFO.bound);
     }
 }
@@ -328,17 +332,11 @@ void pc_set_sensor(char *argv1, char *argv2, char *argv3, char *argv4, char *arg
     pc_printf("$sensor %d\r\n", SYSINFO.sensor);
 }
 
-
-/*******************************************************************************
- *pc指令处理函数2*需通用采集模块响应
- *直接转发给GC，在GC数据处理线程中，存入FLASH，并打印出来
- ******************************************************************************/
 void pc_ds(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
-    pc_printf("\r\n========SZP1-1U V"VERSION"========\r\n");
+    pc_printf("\r\n========IoT human sensor V"VERSION"========\r\n");
     pc_printf("Hardver:"HARDWARE_VERSION"    ""Softver:"SOFTWARE_VERSION"\r\n");
     pc_printf("SN:%5d         Mode:%d\r\n",SYSINFO.id,SYSINFO.mode);
-    pc_printf("Sensor:%d         Pressure:%d\r\n",SYSINFO.sensor,SYSINFO.pressure);
 }
 
 void pc_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
@@ -351,44 +349,45 @@ void pc_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
         if (config_sysinfo(&g_sysinfo) == -1)
         {
             pc_printf("$err %d\r\n",ERR_FLASH);
+            break;
         }
-        gc_printf("setmode %d\r\n", 3);
         break;
     case MODE_FAST:
         g_sysinfo.mode = MODE_FAST;
         if (config_sysinfo(&g_sysinfo) == -1)
         {
             pc_printf("$err %d\r\n",ERR_FLASH);
+            break;
         }
-        if (SYSINFO.pressure == PRESSURE_KELLER)
-        {
-//            EN_PRE(1);
-//            delay_ms(600);
-//            pre_init();
-        }
-        gc_printf("setmode %d\r\n", 2);
+        EN_4G(1);
+        EN_GPS(1);
+        EN_TEMP(1);
+        EN_HR(1);
+        EN_SD(1);
+
         break;
     case MODE_AUTO:
         g_sysinfo.mode = MODE_AUTO;
         if (config_sysinfo(&g_sysinfo) == -1)
         {
             pc_printf("$err %d\r\n",ERR_FLASH);
+            break;
         }
-        if (SYSINFO.pressure == PRESSURE_KELLER)
-        {
-//            EN_PRE(1);
-//            delay_ms(600);
-//            pre_init();
-        }
-        gc_printf("setmode %d\r\n", 1);
+        EN_4G(1);
+        EN_GPS(1);
+        EN_TEMP(1);
+        EN_HR(1);
+        EN_SD(1);
+        
         break;
     case MODE_SM:
         g_sysinfo.mode = MODE_SLEEP;
         if (config_sysinfo(&g_sysinfo) == -1)
         {
             pc_printf("$err %d\r\n",ERR_FLASH);
+            break;
         }
-        gc_printf("setmode %d\r\n", 3);
+
         break;
     default:
         printf("$err %d\r\n",ERR_PARA);
@@ -445,28 +444,6 @@ void pc_takesample_temp(char *argv1, char *argv2, char *argv3, char *argv4, char
 //    pc_printf("%f ", t);
 //    float temp = read_max30205_temperature();
 //    pc_printf("temp:%f", temp);
-}
-
-
-
-void pc_set_fre(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
-{
-    gc_printf("setfre %f\r\n", atof(argv1));    
-}
-
-void pc_set_pump(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
-{
-    gc_printf("setpump %d\r\n", atoi(argv1));    
-}
-
-void pc_set_st_pump(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
-{
-    gc_printf("setst_pump %f\r\n", atof(argv1));    
-}
-
-void pc_set_fre_thr(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
-{
-    gc_printf("setfre_thr %f\r\n", atof(argv1));    
 }
 
 /****************

@@ -19,9 +19,9 @@ typedef unsigned long ulong;
 //共计120字节
 typedef struct
 {
-  //4字节
+  //更新状态 4字节
   uint32_t upgrade;     
-  //id 12各模块，共24字节
+  //id 12个模块，共24字节
   uint16_t id;
   uint16_t id_core;
   uint16_t id_acq;
@@ -77,11 +77,12 @@ typedef struct
 #define SYSINFO  (*(sys_info_t *)(640* 1024))
 
 
-#define ERR_CMD  1
-#define ERR_PARA 2
-#define ERR_MODE    3
-#define ERR_FLASH   4
-#define ERR_GC_DATA 5
+#define ERR_CMD         (-1)
+#define ERR_PARA        (-2)
+#define ERR_MODE        (-3)
+#define ERR_FLASH       (-4)
+#define ERR_GC_DATA     (-5)
+#define ERR_PROCESS     (-6)
 
 
 #define SENSOR_CTD  1
@@ -136,18 +137,7 @@ struct cmd_long
 
 
 
-/*----IO开关宏----*/
-#define LED_R(n)        (n?rt_pin_write(LED_R_PIN, PIN_LOW):rt_pin_write(LED_R_PIN, PIN_HIGH))
-#define LED_G(n)        (n?rt_pin_write(LED_G_PIN, PIN_LOW):rt_pin_write(LED_G_PIN, PIN_HIGH))
-#define LED_B(n)        (n?rt_pin_write(LED_B_PIN, PIN_LOW):rt_pin_write(LED_B_PIN, PIN_HIGH))
 
-#define EN_TEMP(n)      (n?rt_pin_write(EN_TEMP_PIN, PIN_HIGH):rt_pin_write(EN_TEMP_PIN, PIN_LOW))
-#define EN_HR(n)        (n?rt_pin_write(EN_HR_PIN, PIN_HIGH):rt_pin_write(EN_HR_PIN, PIN_LOW))
-#define EN_SD(n)        (n?rt_pin_write(EN_SD_PIN, PIN_HIGH):rt_pin_write(EN_SD_PIN, PIN_LOW))
-
-#define EN_PC_T(n)      (n?rt_pin_write(EN_PC_T_PIN, PIN_HIGH):rt_pin_write(EN_PC_T_PIN, PIN_LOW))
-#define EN_FINSH_T(n)   (n?rt_pin_write(EN_FINSH_T_PIN, PIN_HIGH):rt_pin_write(EN_FINSH_T_PIN, PIN_LOW))
-#define EN_4G_T(n)      (n?rt_pin_write(EN_4G_T_PIN, PIN_HIGH):rt_pin_write(EN_4G_T_PIN, PIN_LOW))
 
 int config_sysinfo(sys_info_t *info);
 

@@ -25,7 +25,7 @@
 //#include "drv_max30205.h"
 //#include "main.h"
 
-const struct cmd g_pc_get_cmd[] =
+const struct serial_data g_pc_get_cmd[] =
 {
     {"$checkin",          pc_checkin},
     {"$ds",               pc_ds},
@@ -36,7 +36,7 @@ const struct cmd g_pc_get_cmd[] =
     {"$ts_temp",          pc_takesample_temp},
 };
 
-const struct cmd g_pc_set_cmd[] = 
+const struct serial_data g_pc_set_cmd[] = 
 {
     {"$setid",            pc_set_id},
     {"$setbaudrate",      pc_set_baudrate},
@@ -161,9 +161,9 @@ void pc_execute_thread_entry(void *parameter)
         int i = 0;
         for (i = sizeof(g_pc_get_cmd)/sizeof(*g_pc_get_cmd) - 1; i >= 0; i--)
         {
-            if (strcmp(g_pc_get_cmd[i].cmd_name, g_pc_uart_receive.argv[0]) == 0)
+            if (strcmp(g_pc_get_cmd[i].serial_data_name, g_pc_uart_receive.argv[0]) == 0)
             {
-                (*(g_pc_get_cmd[i].cmd_function))((g_pc_uart_receive.argv[1]),
+                (*(g_pc_get_cmd[i].serial_data_function))((g_pc_uart_receive.argv[1]),
                                                   (g_pc_uart_receive.argv[2]),
                                                   (g_pc_uart_receive.argv[3]),
                                                   (g_pc_uart_receive.argv[4]),
@@ -175,14 +175,14 @@ void pc_execute_thread_entry(void *parameter)
         int j = 0;
         for (j = sizeof(g_pc_set_cmd)/sizeof(*g_pc_set_cmd) - 1; j >= 0; j--)
         {
-            if (strcmp(g_pc_set_cmd[j].cmd_name, g_pc_uart_receive.argv[0]) == 0)
+            if (strcmp(g_pc_set_cmd[j].serial_data_name, g_pc_uart_receive.argv[0]) == 0)
             {
                 if ((SYSINFO.mode != MODE_SLEEP) && (SYSINFO.mode != MODE_FAST))
                 {
                     rt_kprintf("$err %d\r\n",ERR_MODE);
                     break;
                 }
-                (*(g_pc_set_cmd[j].cmd_function))((g_pc_uart_receive.argv[1]),
+                (*(g_pc_set_cmd[j].serial_data_function))((g_pc_uart_receive.argv[1]),
                                                   (g_pc_uart_receive.argv[2]),
                                                   (g_pc_uart_receive.argv[3]),
                                                   (g_pc_uart_receive.argv[4]),

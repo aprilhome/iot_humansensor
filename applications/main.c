@@ -17,6 +17,7 @@
 #include "drv_board.h"
 #include "conf.h"
 #include "comm_pc.h"
+#include "drv_gps.h"
 
 /* 系统运行相关变量 */
 sys_info_t g_sysinfo = {0};
@@ -35,7 +36,7 @@ int main(void)
     /*外设*/
     config_switch();
     config_uart_pc("uart2", 115200);
-    
+    config_uart_gps("uart1", 38400);
     /*初始化完成提示*/
     LED_R(0);
     pc_printf("$IoT human sensor\r\n");
@@ -72,6 +73,23 @@ int main(void)
     {
         return RT_ERROR;
     }
+    
+    //线程：GPS数据接收处理
+    rt_thread_t gps_data_process_thread = rt_thread_create("gps_data_process",
+                                                         gps_execute_thread_entry,
+                                                         RT_NULL,
+                                                         512,
+                                                         26,
+                                                         10);
+    if (gps_data_process_thread != RT_NULL)
+    {
+        rt_thread_startup(gps_data_process_thread);
+    }
+    else
+    {
+        return RT_ERROR;
+    }
+    
     
     return RT_EOK;
 }

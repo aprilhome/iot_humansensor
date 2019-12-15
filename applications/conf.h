@@ -120,17 +120,17 @@ typedef struct
     uart_receive_flag_e flag;
 }uart_receive_t;
 
-struct cmd
+struct serial_data
 {  
-    char *cmd_name; // 指令名字符串  
-    void (*cmd_function)(char *argv1, char *argv2, char *argv3, 
-                         char *argv4, char *argv5, char *argv6); // 指向该指令处理函数的指针
+    char *serial_data_name; // 指令名字符串  
+    void (*serial_data_function)(char *argv1, char *argv2, char *argv3, 
+                                 char *argv4, char *argv5, char *argv6); // 指向该指令处理函数的指针
 };
 
-struct cmd_long
+struct serial_data_long
 {
-    char *cmd_name; // 指令名字符串  
-    void (*cmd_function)(void);
+    char *serial_data_name; // 指令名字符串  
+    void (*serial_data_function)(void);
 };
 
 #define PC_UART USART2

@@ -133,7 +133,7 @@ struct serial_data_long
     void (*serial_data_function)(void);
 };
 
-#define PC_UART USART2
+
 
 
 

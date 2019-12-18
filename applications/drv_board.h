@@ -3,8 +3,8 @@
 
 /*LED指示*/
 #define LED_R_PIN           GET_PIN(C, 6)
-#define LED_G_PIN           GET_PIN(C, 7)
-#define LED_B_PIN           GET_PIN(B, 0)
+#define LED_G_PIN           GET_PIN(B, 0)
+#define LED_B_PIN           GET_PIN(C, 7)
 
 /*电源使能*/
 #define EN_TEMP_PIN         GET_PIN(B, 4)
@@ -14,9 +14,11 @@
 #define EN_SD_PIN           GET_PIN(C, 13)
 
 /*通讯接口发送使能*/
-#define EN_PC_T_PIN         GET_PIN(C, 3)
+#define EN_PC_T_PIN         GET_PIN(B, 2)
 #define EN_FINSH_T_PIN      GET_PIN(B, 2)
 #define EN_4G_T_PIN         GET_PIN(C, 3)
+
+#define PC_UART             LPUART1
 
 /*----IO开关宏----*/
 #define LED_R(n)        (n?rt_pin_write(LED_R_PIN, PIN_LOW):rt_pin_write(LED_R_PIN, PIN_HIGH))

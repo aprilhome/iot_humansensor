@@ -35,10 +35,14 @@ int main(void)
     
     /*外设*/
     config_switch();
-    config_uart_pc("uart2", 115200);
-    config_uart_gps("uart1", 38400);
+    config_uart_pc("lpuart1", 115200);
+    EN_GPS(1);
+    EN_4G(1);
+    EN_TEMP(1);
+    EN_HR(1);
+//    config_uart_gps("uart1", 38400);
     /*初始化完成提示*/
-    LED_R(0);
+//    LED_R(1);
     pc_printf("$IoT human sensor\r\n");
     
     /*线程*/

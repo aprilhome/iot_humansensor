@@ -1,0 +1,65 @@
+[33mcommit 1450bf597a343c2eb50a2606232d04ed426b5019[m[33m ([m[1;36mHEAD -> [m[1;32mfeature/temp[m[33m, [m[1;32mfeature/hardware_test[m[33m)[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Wed Dec 18 15:45:41 2019 +0800
+
+    feat:测试电路板功能
+    - 电流异常，60mA
+    - 各个IO正常
+
+[33mcommit e9382b08897572b1751f4e37142377eee9aecf85[m[33m ([m[1;32mmaster[m[33m)[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Sun Dec 15 15:12:20 2019 +0800
+
+    feat:增加gps驱动文件
+    - 增加gps串口配置、中断、数据接收、数据处理
+    - 增加gps线程
+
+[33mcommit de9c40e97219cf0cf3b4dcc0e74c9d3a61dfc997[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Fri Dec 13 22:41:33 2019 +0800
+
+    perf:优化comm_pc和board
+    - 删掉一些不用的上位机指令
+    - 增加了4G,GPS的上电控制宏
+
+[33mcommit 1f304581ccd1b4188f5097e0438c018630317ce4[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Fri Dec 13 17:25:31 2019 +0800
+
+    feat:添加led和pc_cmd线程，设置分区列表
+    - 添加led线程，1秒闪烁一次
+    - 添加pc_cmd线程
+    - 设置分区列表，参考BootLoader分别有bl,download,app,sysinfo
+
+[33mcommit 40558b5cb6888ef2553802f1b4f592ed4c44f451[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Fri Dec 13 16:20:21 2019 +0800
+
+    doce:增加main,drv_board,comm_pc说明
+
+[33mcommit bc2cc447d75a01e22f65a45709104571524bba43[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Fri Dec 13 11:41:23 2019 +0800
+
+    feat:增加串口和开关功能
+    -增加串口文件，尽量不修改该文件，使用pc_printf等
+    -增加板文件，主要定义各个IO控制引脚和宏定义等
+
+[33mcommit 9354e74ad1d3f0e4ea57a9002eca3682e4e40903[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Thu Dec 12 21:54:37 2019 +0800
+
+    perf:优化各个外设
+    
+    -去掉如UART3,PWM等不用外设
+    -在rtconfig手动去掉RT_USING_PWM,否则一直有，编译错误
+
+[33mcommit a96f4c814a216dda8a617ed86d14b20c5375e1a3[m
+Author: aprilhome <liangjin129@163.com>
+Date:   Thu Dec 12 10:59:20 2019 +0800
+
+    feat:基于潘多拉修改board，增加外设
+    
+    -4.0.1内stm32内Pandora文件dist
+    -时钟MSI通过PLL倍频为80MHz
+    -增加uart,spi,i2c等

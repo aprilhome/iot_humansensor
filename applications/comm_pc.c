@@ -22,7 +22,7 @@
 #include "conf.h"
 //#include "drv_board.h"
 //#include "drv_max30102.h"
-//#include "drv_max30205.h"
+#include "drv_max30205.h"
 //#include "main.h"
 
 const struct serial_data g_pc_get_cmd[] =

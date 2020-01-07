@@ -200,8 +200,8 @@
 
 /* Notice: PC8 --> 40; PC9 --> 41 */
 
-#define BSP_I2C3_SCL_PIN 40
-#define BSP_I2C3_SDA_PIN 41
+#define BSP_I2C3_SCL_PIN 43
+#define BSP_I2C3_SDA_PIN 42
 
 /* Board extended module Drivers */
 

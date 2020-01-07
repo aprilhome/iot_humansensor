@@ -194,8 +194,8 @@
 
 /* Notice: PC11 --> 43; PC10 --> 42 */
 
-#define BSP_I2C2_SCL_PIN 43
-#define BSP_I2C2_SDA_PIN 42
+#define BSP_I2C2_SCL_PIN 40
+#define BSP_I2C2_SDA_PIN 41
 #define BSP_USING_I2C3
 
 /* Notice: PC8 --> 40; PC9 --> 41 */

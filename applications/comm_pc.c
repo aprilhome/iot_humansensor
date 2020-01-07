@@ -21,7 +21,7 @@
 #include "drv_board.h"
 #include "conf.h"
 //#include "drv_board.h"
-//#include "drv_max30102.h"
+#include "drv_max30102.h"
 #include "drv_max30205.h"
 //#include "main.h"
 
@@ -427,7 +427,7 @@ void pc_takesample_hr(char *argv1, char *argv2, char *argv3, char *argv4, char *
 {
     pc_printf("takesample_hr\r\n");
     rt_uint8_t reg[6] = {0};
-//    read_max30102_fifo(reg);
+    read_max30102_fifo(reg);
     for (rt_uint8_t i = 0; i < 6; i++)
     {
         pc_printf("%02x ", reg[i]);

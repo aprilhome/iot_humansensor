@@ -19,6 +19,7 @@
 #include "comm_pc.h"
 #include "drv_gps.h"
 #include "drv_max30205.h"
+#include "drv_max30102.h"
 
 /* 系统运行相关变量 */
 sys_info_t g_sysinfo = {0};
@@ -38,6 +39,7 @@ int main(void)
     config_switch();
     config_uart_pc("lpuart1", 115200);
     max30205_init();
+    max30102_init();
     EN_GPS(1);
     EN_4G(1);
     EN_TEMP(1);

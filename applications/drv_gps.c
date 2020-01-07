@@ -135,7 +135,7 @@ void gps_execute_thread_entry(void *parameter)
 {
     while (1)
     {
-        rt_sem_take(g_gps_uart_sem, RT_WAITING_FOREVER);
+//        rt_sem_take(g_gps_uart_sem, RT_WAITING_FOREVER);
        
         int i = 0;
         for (i = sizeof(g_gps_data)/sizeof(*g_gps_data) - 1; i >= 0; i--)

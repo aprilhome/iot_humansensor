@@ -18,6 +18,7 @@
 #include "conf.h"
 #include "comm_pc.h"
 #include "drv_gps.h"
+#include "drv_max30205.h"
 
 /* 系统运行相关变量 */
 sys_info_t g_sysinfo = {0};
@@ -36,6 +37,7 @@ int main(void)
     /*外设*/
     config_switch();
     config_uart_pc("lpuart1", 115200);
+    max30205_init();
     EN_GPS(1);
     EN_4G(1);
     EN_TEMP(1);
@@ -43,8 +45,11 @@ int main(void)
 //    config_uart_gps("uart1", 38400);
     /*初始化完成提示*/
 //    LED_R(1);
+    EN_PC_T(1);
+    rt_thread_mdelay(2);
     pc_printf("$IoT human sensor\r\n");
-    
+    EN_PC_T(0);
+    rt_thread_mdelay(2);
     /*线程*/
     //线程：LED闪烁
     rt_thread_t led_thread = rt_thread_create("led",

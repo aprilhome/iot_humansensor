@@ -158,6 +158,8 @@ void pc_execute_thread_entry(void *parameter)
     while (1)
     {
         rt_sem_take(g_pc_uart_sem, RT_WAITING_FOREVER);
+        EN_PC_T(1);
+        rt_thread_mdelay(2);
         int i = 0;
         for (i = sizeof(g_pc_get_cmd)/sizeof(*g_pc_get_cmd) - 1; i >= 0; i--)
         {
@@ -198,8 +200,9 @@ void pc_execute_thread_entry(void *parameter)
         g_pc_uart_receive.argc = 0;
         g_pc_uart_receive.len = 0;
         g_pc_uart_receive.flag = STATE_IDLE;
-        
-        rt_thread_mdelay(500);
+        EN_PC_T(0);
+        rt_thread_mdelay(2);
+//        rt_thread_mdelay(500);
     }
 }
 
@@ -442,8 +445,8 @@ void pc_takesample_temp(char *argv1, char *argv2, char *argv3, char *argv4, char
 //    }
 //    float t = reg[0] + 0.0625 * reg[1];
 //    pc_printf("%f ", t);
-//    float temp = read_max30205_temperature();
-//    pc_printf("temp:%f", temp);
+    float temp = read_max30205_temperature();
+    pc_printf("temp:%f", temp);
 }
 
 /****************

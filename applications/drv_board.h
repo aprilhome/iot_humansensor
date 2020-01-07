@@ -31,8 +31,8 @@
 #define EN_GPS(n)       (n?rt_pin_write(EN_GPS_PIN, PIN_HIGH):rt_pin_write(EN_GPS_PIN, PIN_LOW))
 #define EN_SD(n)        (n?rt_pin_write(EN_SD_PIN, PIN_HIGH):rt_pin_write(EN_SD_PIN, PIN_LOW))
 
-#define EN_PC_T(n)      (n?rt_pin_write(EN_PC_T_PIN, PIN_HIGH):rt_pin_write(EN_PC_T_PIN, PIN_LOW))
-#define EN_FINSH_T(n)   (n?rt_pin_write(EN_FINSH_T_PIN, PIN_HIGH):rt_pin_write(EN_FINSH_T_PIN, PIN_LOW))
+//#define EN_PC_T(n)      (n?rt_pin_write(EN_PC_T_PIN, PIN_HIGH):rt_pin_write(EN_PC_T_PIN, PIN_LOW))
+#define EN_PC_T(n)   (n?rt_pin_write(EN_FINSH_T_PIN, PIN_HIGH):rt_pin_write(EN_FINSH_T_PIN, PIN_LOW))
 #define EN_4G_T(n)      (n?rt_pin_write(EN_4G_T_PIN, PIN_HIGH):rt_pin_write(EN_4G_T_PIN, PIN_LOW))
 
 

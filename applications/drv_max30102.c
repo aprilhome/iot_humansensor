@@ -119,14 +119,19 @@ void max30102_init(void)
     }
     else
     {
-        //依次执行：复位，设置参数
+        //依次执行：复位2次，设置参数，使能温度
         rt_uint8_t data_reset = 0x40;        
         max30102_write_reg(REG_MODE_CONFIG, 1, &data_reset);    //reset
         max30102_write_reg(REG_MODE_CONFIG, 1, &data_reset);    //reset
         
-        rt_uint8_t data[13] = {0xc0, 0x02, 0x00, 0x00, 0x00, 0x00,
-                               0x0f, 0x03, 0x27, 0x00, 0x24, 0x24, 0x7f};
-        max30102_write_reg(REG_INTR_ENABLE_1, 13, data);        //setting 
+        rt_uint8_t reg_enable[5] = {0xc0, 0x00, 0x00, 0x00, 0x00};
+        rt_uint8_t reg_config[3] = {0x0f, 0x03, 0x27};
+        rt_uint8_t reg_led[2] = {0x24, 0x24};
+        rt_uint8_t reg_pilot[1] = {0x7f};
+        max30102_write_reg(REG_INTR_ENABLE_1, 5, reg_enable); 
+        max30102_write_reg(REG_FIFO_CONFIG, 3, reg_config);
+        max30102_write_reg(REG_LED1_PA, 2, reg_led);
+        max30102_write_reg(REG_PILOT_PA, 1, reg_pilot);
         
         rt_uint8_t data_temp = 0x01;
         max30102_write_reg(REG_TEMP_CONFIG, 1, &data_temp);
@@ -157,29 +162,33 @@ void read_max30102_reg(rt_uint8_t *reg)
 void read_max30102_fifo(rt_uint8_t *reg)
 {
     rt_uint8_t temp;
+    //读取并清除中断状态寄存器
     max30102_read_reg(REG_INTR_STATUS_1, 1, &temp);
     max30102_read_reg(REG_INTR_STATUS_2, 1, &temp);
+    
+    //读取FIFO6个字节，前3个为红灯，后三个为红外
     max30102_read_reg(REG_FIFO_DATA, 6, reg);
 }
+
 #define MAX_BRIGHTNESS 255
+uint32_t aun_ir_buffer[500];        //IR LED sensor data
+int32_t n_ir_buffer_length;         //data length
+uint32_t aun_red_buffer[500];       //Red LED sensor data
+int32_t n_sp02;                     //SPO2 value
+int8_t ch_spo2_valid;   //indicator to show if the SP02 calculation is valid
+int32_t n_heart_rate;   //heart rate value
+int8_t  ch_hr_valid;    //indicator to show if the heart rate calculation is valid
+
 void max30102_acq(void)
-{
-    uint32_t aun_ir_buffer[500]; //IR LED sensor data
-    int32_t n_ir_buffer_length;    //data length
-    uint32_t aun_red_buffer[500];    //Red LED sensor data
-    int32_t n_sp02; //SPO2 value
-    int8_t ch_spo2_valid;   //indicator to show if the SP02 calculation is valid
-    int32_t n_heart_rate;   //heart rate value
-    int8_t  ch_hr_valid;    //indicator to show if the heart rate calculation is valid
-    
+{    
     uint32_t un_min, un_max, un_prev_data;  
     int i;
     int32_t n_brightness;
     float f_temp;
-    uint8_t temp_num=0;
-    uint8_t temp[6];
-    uint8_t str[100];
-    uint8_t dis_hr=0, dis_spo2=0;
+//    uint8_t temp_num=0;
+    uint8_t temp[6] = {0};
+//    uint8_t str[100];
+//    uint8_t dis_hr=0, dis_spo2=0;
     
     un_min = 0x3FFFF;
     un_max = 0;
@@ -191,8 +200,8 @@ void max30102_acq(void)
         while (rt_pin_read(MAX30102_INT));   //wait until the interrupt pin asserts
         
         read_max30102_fifo(temp);
-        aun_red_buffer[i] =  (long)((long)((long)temp[0]&0x03)<<16) | (long)temp[1]<<8 | (long)temp[2];    // Combine values to get the actual number
-        aun_ir_buffer[i] = (long)((long)((long)temp[3] & 0x03)<<16) |(long)temp[4]<<8 | (long)temp[5];   // Combine values to get the actual number
+        aun_red_buffer[i] = (long)((long)((long)temp[0]&0x03)<<16) | (long)temp[1]<<8 | (long)temp[2];  // Combine values to get the actual number
+        aun_ir_buffer[i]  = (long)((long)((long)temp[3]&0x03)<<16) | (long)temp[4]<<8 | (long)temp[5];  // Combine values to get the actual number
         
         if(un_min>aun_red_buffer[i])
             un_min=aun_red_buffer[i];    //update signal min
@@ -200,11 +209,12 @@ void max30102_acq(void)
             un_max=aun_red_buffer[i];    //update signal max
     }
     un_prev_data=aun_red_buffer[i];
+    
     //calculate heart rate and SpO2 after first 500 samples (first 5 seconds of samples)
     maxim_heart_rate_and_oxygen_saturation(aun_ir_buffer, n_ir_buffer_length, aun_red_buffer, &n_sp02, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid); 
     
-    while(1)
-    {
+//    while(1)
+//    {
         i=0;
         un_min=0x3FFFF;
         un_max=0;
@@ -227,8 +237,8 @@ void max30102_acq(void)
             un_prev_data=aun_red_buffer[i-1];
             while (rt_pin_read(MAX30102_INT));
             read_max30102_fifo(temp);
-            aun_red_buffer[i] =  (long)((long)((long)temp[0]&0x03)<<16) | (long)temp[1]<<8 | (long)temp[2];    // Combine values to get the actual number
-            aun_ir_buffer[i] = (long)((long)((long)temp[3] & 0x03)<<16) |(long)temp[4]<<8 | (long)temp[5];   // Combine values to get the actual number
+            aun_red_buffer[i] = (long)((long)((long)temp[0]&0x03)<<16) | (long)temp[1]<<8 | (long)temp[2];   // Combine values to get the actual number
+            aun_ir_buffer[i]  = (long)((long)((long)temp[3]&0x03)<<16) | (long)temp[4]<<8 | (long)temp[5];   // Combine values to get the actual number
             
             if(aun_red_buffer[i]>un_prev_data)
             {
@@ -249,27 +259,24 @@ void max30102_acq(void)
                     n_brightness=MAX_BRIGHTNESS;
             }
             //send samples and calculation result to terminal program through UART
-            if(ch_hr_valid == 1 && n_heart_rate<120)//**/ ch_hr_valid == 1 && ch_spo2_valid ==1 && n_heart_rate<120 && n_sp02<101
-            {
-                dis_hr = n_heart_rate;
-                dis_spo2 = n_sp02;
-            }
-            else
-            {
-                dis_hr = 0;
-                dis_spo2 = 0;
-            }
-            pc_printf("HR=%i, ", n_heart_rate); 
-            pc_printf("HRvalid=%i, ", ch_hr_valid);
-            pc_printf("SpO2=%i, ", n_sp02);
-            pc_printf("SPO2Valid=%i\r\n", ch_spo2_valid);
+//            if(ch_hr_valid == 1 && n_heart_rate<120)//**/ ch_hr_valid == 1 && ch_spo2_valid ==1 && n_heart_rate<120 && n_sp02<101
+//            {
+//                dis_hr = n_heart_rate;
+//                dis_spo2 = n_sp02;
+//            }
+//            else
+//            {
+//                dis_hr = 0;
+//                dis_spo2 = 0;
+//            }
+//            pc_printf("red=%i, ir=%i\r\n", aun_red_buffer[i], aun_ir_buffer[i]); 
+//            pc_printf("HR=%i, HRvalid=%i\r\n", n_heart_rate, ch_hr_valid); 
+//            pc_printf("SpO2=%i, SPO2Valid=%i\r\n", n_sp02, ch_spo2_valid);
         }
         maxim_heart_rate_and_oxygen_saturation(aun_ir_buffer, n_ir_buffer_length, aun_red_buffer, &n_sp02, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid);
-    }
-
-
+        pc_printf("HR=%i, SpO2=%i\r\n", n_heart_rate, n_sp02);
+//    }
 }
-
 
 /**
   * @brief    读温度寄存器值，注意每次先使能    

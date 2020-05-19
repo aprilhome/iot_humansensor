@@ -38,7 +38,7 @@
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 256
-#define RT_CONSOLE_DEVICE_NAME "uart1"
+#define RT_CONSOLE_DEVICE_NAME "lpuart1"
 #define RT_VER_NUM 0x40001
 #define ARCH_ARM
 #define ARCH_ARM_CORTEX_M
@@ -80,9 +80,11 @@
 #define RT_USING_SERIAL
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_HWTIMER
 #define RT_USING_I2C
 #define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
+#define RT_USING_RTC
 #define RT_USING_SPI
 
 /* Using WiFi */
@@ -93,6 +95,7 @@
 
 /* POSIX layer and C standard library */
 
+#define RT_USING_LIBC
 
 /* Network */
 
@@ -183,25 +186,10 @@
 #define BSP_USING_ON_CHIP_FLASH
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
-#define BSP_USING_I2C
-#define BSP_USING_I2C1
-
-/* Notice: PB6 --> 22; PB7 --> 23 */
-
-#define BSP_I2C1_SCL_PIN 22
-#define BSP_I2C1_SDA_PIN 23
-#define BSP_USING_I2C2
-
-/* Notice: PC11 --> 43; PC10 --> 42 */
-
-#define BSP_I2C2_SCL_PIN 40
-#define BSP_I2C2_SDA_PIN 41
-#define BSP_USING_I2C3
-
-/* Notice: PC8 --> 40; PC9 --> 41 */
-
-#define BSP_I2C3_SCL_PIN 43
-#define BSP_I2C3_SDA_PIN 42
+#define BSP_USING_TIM
+#define BSP_USING_TIM15
+#define BSP_USING_ONCHIP_RTC
+#define BSP_RTC_USING_LSE
 
 /* Board extended module Drivers */
 

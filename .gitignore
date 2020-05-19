@@ -13,7 +13,6 @@
 build
 Debug
 documentation/html
-packages/
 *~
 *.o
 *.obj
@@ -40,11 +39,3 @@ RTE/
 settings/
 *.uvguix*
 cconfig.h
-
-*.dep
-*.ewd
-*.ewp
-*.ewt
-*.eww
-*.uvoptx
-*.uvprojx

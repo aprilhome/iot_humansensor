@@ -401,12 +401,13 @@ void pc_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
 void pc_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
     pc_printf("takesample_all\r\n");
-    rt_uint8_t reg[33] = {0};
-//    read_max30102_reg(reg);
-    for (rt_uint8_t i = 0; i < 33; i++)
-    {
-        pc_printf("%02x ", reg[i]);
-    }
+//    rt_uint8_t reg[33] = {0};
+////    read_max30102_reg(reg);
+//    for (rt_uint8_t i = 0; i < 33; i++)
+//    {
+//        pc_printf("%02x ", reg[i]);
+//    }
+    max30102_acq();
 }
 
 void pc_takesample_spo2(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)

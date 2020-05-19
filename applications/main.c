@@ -38,8 +38,7 @@ int main(void)
     /*外设*/
     config_switch();
     config_uart_pc("lpuart1", 115200);
-    max30205_init();
-    max30102_init();
+
     EN_GPS(1);
     EN_4G(1);
     EN_TEMP(1);
@@ -49,6 +48,8 @@ int main(void)
 //    LED_R(1);
     EN_PC_T(1);
     rt_thread_mdelay(2);
+    max30205_init();
+    max30102_init();
     pc_printf("$IoT human sensor\r\n");
     EN_PC_T(0);
     rt_thread_mdelay(2);
@@ -85,21 +86,21 @@ int main(void)
         return RT_ERROR;
     }
     
-    //线程：GPS数据接收处理
-    rt_thread_t gps_data_process_thread = rt_thread_create("gps_data_process",
-                                                         gps_execute_thread_entry,
-                                                         RT_NULL,
-                                                         512,
-                                                         26,
-                                                         10);
-    if (gps_data_process_thread != RT_NULL)
-    {
-        rt_thread_startup(gps_data_process_thread);
-    }
-    else
-    {
-        return RT_ERROR;
-    }
+//    //线程：GPS数据接收处理
+//    rt_thread_t gps_data_process_thread = rt_thread_create("gps_data_process",
+//                                                         gps_execute_thread_entry,
+//                                                         RT_NULL,
+//                                                         512,
+//                                                         26,
+//                                                         10);
+//    if (gps_data_process_thread != RT_NULL)
+//    {
+//        rt_thread_startup(gps_data_process_thread);
+//    }
+//    else
+//    {
+//        return RT_ERROR;
+//    }
     
     
     return RT_EOK;

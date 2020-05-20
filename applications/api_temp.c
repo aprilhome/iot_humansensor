@@ -39,7 +39,7 @@ static rt_err_t temp_uart_receive_callback(rt_device_t dev,rt_size_t size)
             switch (g_temp_uart_receive.flag)
             {
             case STATE_IDLE:
-                if (ch == 0xEB)
+                if (ch == 0xfd)
                 {
                     g_temp_uart_receive.flag = STATE_RECEIVE;
                     g_temp_uart_receive.buff[0] = ch;
@@ -53,24 +53,7 @@ static rt_err_t temp_uart_receive_callback(rt_device_t dev,rt_size_t size)
                     g_temp_uart_receive.len  = 0;
                     break;
                 }
-                if (g_temp_uart_receive.len == 5)
-                {
-                    if ((g_temp_uart_receive.buff[1] == 0x90) && (g_temp_uart_receive.buff[2] == 0x76))
-                    {
-                        uint8_t temp[2] = {0};
-                        temp[0] = g_temp_uart_receive.buff[4];
-                        temp[1] = g_temp_uart_receive.buff[3];
-                        data_len = *(rt_uint16_t *)temp; 
-                        g_temp_uart_receive.buff[g_temp_uart_receive.len++] = ch;
-                    }
-                    else
-                    {
-                        g_temp_uart_receive.flag = STATE_IDLE;
-                        g_temp_uart_receive.len  = 0;
-                    }
-                    break;
-                }
-                if (g_temp_uart_receive.len >= data_len + 6)
+                if (g_temp_uart_receive.len >= 6)
                 {
                     g_temp_uart_receive.flag = STATE_IDLE;
                     g_temp_uart_receive.buff[g_temp_uart_receive.len++] = ch; 
@@ -101,19 +84,7 @@ void temp_execute_thread_entry(void *parameter)
     while (1)
     {
         rt_sem_take(g_temp_uart_sem, RT_WAITING_FOREVER);
-
-        //校验和
-        rt_uint16_t j = 0;
-        rt_uint16_t sum = 0;
-        for (j = 0; j < 288; j++)
-        {
-            sum += g_temp_uart_receive.buff[j + 5];
-        }
-        if (sum != g_temp_uart_receive.buff[g_temp_uart_receive.len])
-        {
-            rt_kprintf("temp checksum failed\n");
-        }
-        
+       
         //读TEMP，写到全局变量
         rt_uint16_t i = 0;
         for (i = 0; i < g_temp_uart_receive.len; i++)
@@ -121,8 +92,17 @@ void temp_execute_thread_entry(void *parameter)
             g_temp_data.data[i] = g_temp_uart_receive.buff[i];
         }
         g_temp_data.len = i;
-//        rt_kprintf("temp received\n");
         rt_event_send(g_sample_event, EVENT_TEMP_RECV);
+        if ((SYSINFO.mode == MODE_SLEEP) || (SYSINFO.mode == MODE_NORMAL) || 
+            (SYSINFO.mode == MODE_AUTO))
+        {
+            config_pm_t(1);
+            for (uint j = 0; j < g_temp_data.len; j++)
+            {
+                pm_printf("%c", g_temp_data.data[j]);
+            }
+            config_pm_t(0);
+        }
         rt_thread_mdelay(20);
     }
 }

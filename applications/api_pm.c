@@ -33,7 +33,7 @@ const struct uart_execute g_pm_get_cmd[] =
     {"$ds",               pm_ds},
     {"$gettime",          pm_gettime},
     {"$setmode",          pm_set_mode},
-    {"$gettemp",          pm_takesample},    
+    {"$gethr",            pm_takesample},    
     {"$getgps",           pm_getgps},
     {"$getlast",          pm_getlast},
 };
@@ -547,10 +547,11 @@ void pm_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
             pm_printf("$err %d\r\n",ERR_FLASH);
             break;
         }
-        EN_4G(1);
         EN_GPS(1);
+        EN_TEMP(1);
+        EN_HR(1);
         EN_SD(1);
-        config_hwtimer(1, SYSINFO.interval);
+        config_hwtimer(0, SYSINFO.interval);
         break;
     case MODE_AUTO:
         g_sysinfo.mode = MODE_AUTO;
@@ -559,9 +560,11 @@ void pm_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
             pm_printf("$err %d\r\n",ERR_FLASH);
             break;
         }
-        EN_4G(1);
         EN_GPS(1);
-        EN_SD(1);        
+        EN_TEMP(1);
+        EN_HR(1);
+        EN_SD(1); 
+        config_hwtimer(1, SYSINFO.interval);
         break;
     case MODE_SM:
         g_sysinfo.mode = MODE_SM;
@@ -580,8 +583,9 @@ void pm_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
 
 void pm_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
-//    for (rt_uint16_t i = 0; i < g_sample_len; i++)
-//    {
-//        pm_printf("%c\r\n", g_sample[i]);
-//    }
+    char a[6] = {0xfd, 0, 0, 0, 0, 0};
+    for (uint i = 0; i < 6; i++)
+    {
+        hr_printf("%c", a[i]);
+    }
 }

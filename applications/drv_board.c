@@ -47,9 +47,9 @@ void init_switch(void)
     rt_pin_write(LED_R_PIN, PIN_HIGH);
     rt_pin_write(LED_G_PIN, PIN_HIGH);
     rt_pin_write(LED_B_PIN, PIN_HIGH);
-    rt_pin_write(EN_232_UART24_T_PIN, PIN_HIGH);
+    rt_pin_write(EN_232_UART24_T_PIN, PIN_LOW);
     rt_pin_write(EN_485_LPUART1_T_PIN, PIN_LOW);
-    rt_pin_write(EN_SD_PIN, PIN_HIGH);    
+    rt_pin_write(EN_SD_PIN, PIN_LOW);    
     
     rt_pin_mode(EN_TEMP_PIN, PIN_MODE_OUTPUT); 
     rt_pin_mode(EN_GPS_PIN, PIN_MODE_OUTPUT);
@@ -120,6 +120,23 @@ void pm_printf (char *fmt, ...)
     {
         while((PC_UART->ISR & 0x40) == 0); //循环发送，直到发送完毕
         PC_UART->TDR = bufffer[i++];
+    }
+    va_end(arg_ptr);
+}
+
+void hr_printf (char *fmt, ...)
+{
+    char bufffer[MAX_SEND_LEN_PM + 1] = {0};  // CMD_BUFFER_LEN长度自己定义吧
+    unsigned int i = 0;
+    unsigned int len = 0;
+    
+    va_list arg_ptr;
+    va_start(arg_ptr, fmt);  
+    len = vsnprintf(bufffer, MAX_SEND_LEN_PM + 1, fmt, arg_ptr);
+    while ((i < MAX_SEND_LEN_PM) && (i < len) && (len > 0))
+    {
+        while((HR_UART->ISR & 0x40) == 0); //循环发送，直到发送完毕
+        HR_UART->TDR = bufffer[i++];
     }
     va_end(arg_ptr);
 }

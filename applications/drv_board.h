@@ -35,6 +35,7 @@
 
 /************ 外设宏 ************/
 #define PC_UART                 LPUART1
+#define HR_UART                 USART1
 #define HWTIMER_DEV_NAME        "timer15" /* 定时器名称 */
 
 /************ 串口 ************/
@@ -78,6 +79,7 @@ typedef struct
 #define MAX_SEND_LEN_LPU1         200
 void gc_printf (char *fmt, ...);
 void pm_printf (char *fmt, ...);
+void hr_printf (char *fmt, ...);
 void u1_printf (char *fmt, ...);
 void u2_printf (char *fmt, ...);
 void u3_printf (char *fmt, ...);

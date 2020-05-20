@@ -52,6 +52,7 @@ int main(void)
     EN_GPS(1);
     EN_TEMP(1);
     EN_HR(1);
+    EN_SD(1);
     EN_FINSH_T(1);
 
     init_uart_pm("lpuart1", SYSINFO.bound);
@@ -66,6 +67,9 @@ int main(void)
         config_hwtimer(0,5);
         break;
     case MODE_NORMAL:
+        config_hwtimer(0, SYSINFO.interval);
+        break;
+    case MODE_AUTO:
         config_hwtimer(1, SYSINFO.interval);
         break;
     default:

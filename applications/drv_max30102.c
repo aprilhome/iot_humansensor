@@ -16,7 +16,7 @@
 #include "drv_max30102.h"
 #include "algorithm.h"
 //#include "conf.h"
-#include "comm_pc.h"
+
 
 
 static struct rt_i2c_bus_device *g_i2c_bus_max30102 = RT_NULL;     /* I2C总线设备句柄 */

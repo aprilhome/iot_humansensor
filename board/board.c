@@ -28,8 +28,10 @@ void SystemClock_Config(void)
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_LSE
+                              |RCC_OSCILLATORTYPE_MSI;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
   RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
@@ -57,10 +59,10 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART2
-                              |RCC_PERIPHCLK_USART3|RCC_PERIPHCLK_UART4
-                              |RCC_PERIPHCLK_UART5|RCC_PERIPHCLK_LPUART1
-                              |RCC_PERIPHCLK_ADC;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
+                              |RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_USART3
+                              |RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_UART5
+                              |RCC_PERIPHCLK_LPUART1|RCC_PERIPHCLK_ADC;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
@@ -68,6 +70,7 @@ void SystemClock_Config(void)
   PeriphClkInit.Uart5ClockSelection = RCC_UART5CLKSOURCE_PCLK1;
   PeriphClkInit.Lpuart1ClockSelection = RCC_LPUART1CLKSOURCE_PCLK1;
   PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_MSI;
   PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
   PeriphClkInit.PLLSAI1.PLLSAI1N = 16;

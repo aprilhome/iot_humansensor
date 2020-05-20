@@ -64,6 +64,8 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
+IWDG_HandleTypeDef hiwdg;
+
 UART_HandleTypeDef hlpuart1;
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart5;
@@ -71,10 +73,15 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
+RTC_HandleTypeDef hrtc;
+
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim15;
+TIM_HandleTypeDef htim16;
+TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -85,15 +92,20 @@ TIM_HandleTypeDef htim4;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_IWDG_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_UART4_Init(void);
 static void MX_UART5_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_RTC_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM15_Init(void);
+static void MX_TIM16_Init(void);
+static void MX_TIM17_Init(void);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -134,15 +146,20 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
+  MX_IWDG_Init();
   MX_LPUART1_UART_Init();
   MX_UART4_Init();
   MX_UART5_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
+  MX_RTC_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();
   MX_TIM4_Init();
+  MX_TIM15_Init();
+  MX_TIM16_Init();
+  MX_TIM17_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -176,8 +193,10 @@ void SystemClock_Config(void)
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_LSE
+                              |RCC_OSCILLATORTYPE_MSI;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
   RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
@@ -205,10 +224,10 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART2
-                              |RCC_PERIPHCLK_USART3|RCC_PERIPHCLK_UART4
-                              |RCC_PERIPHCLK_UART5|RCC_PERIPHCLK_LPUART1
-                              |RCC_PERIPHCLK_ADC;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
+                              |RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_USART3
+                              |RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_UART5
+                              |RCC_PERIPHCLK_LPUART1|RCC_PERIPHCLK_ADC;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
@@ -216,6 +235,7 @@ void SystemClock_Config(void)
   PeriphClkInit.Uart5ClockSelection = RCC_UART5CLKSOURCE_PCLK1;
   PeriphClkInit.Lpuart1ClockSelection = RCC_LPUART1CLKSOURCE_PCLK1;
   PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_MSI;
   PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
   PeriphClkInit.PLLSAI1.PLLSAI1N = 16;
@@ -289,7 +309,7 @@ static void MX_ADC1_Init(void)
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-  sConfig.SingleDiff = ADC_DIFFERENTIAL_ENDED;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -299,6 +319,35 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
+  * @brief IWDG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IWDG_Init(void)
+{
+
+  /* USER CODE BEGIN IWDG_Init 0 */
+
+  /* USER CODE END IWDG_Init 0 */
+
+  /* USER CODE BEGIN IWDG_Init 1 */
+
+  /* USER CODE END IWDG_Init 1 */
+  hiwdg.Instance = IWDG;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_4;
+  hiwdg.Init.Window = 4095;
+  hiwdg.Init.Reload = 4095;
+  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN IWDG_Init 2 */
+
+  /* USER CODE END IWDG_Init 2 */
 
 }
 
@@ -512,6 +561,41 @@ static void MX_USART3_UART_Init(void)
 }
 
 /**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
+
+  /* USER CODE BEGIN RTC_Init 0 */
+
+  /* USER CODE END RTC_Init 0 */
+
+  /* USER CODE BEGIN RTC_Init 1 */
+
+  /* USER CODE END RTC_Init 1 */
+  /** Initialize RTC Only 
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = 127;
+  hrtc.Init.SynchPrediv = 255;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
+
+  /* USER CODE END RTC_Init 2 */
+
+}
+
+/**
   * @brief SPI1 Initialization Function
   * @param None
   * @retval None
@@ -603,6 +687,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 0 */
 
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
@@ -615,6 +700,15 @@ static void MX_TIM4_Init(void)
   htim4.Init.Period = 0;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
   {
     Error_Handler();
@@ -641,6 +735,116 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 2 */
   HAL_TIM_MspPostInit(&htim4);
+
+}
+
+/**
+  * @brief TIM15 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM15_Init(void)
+{
+
+  /* USER CODE BEGIN TIM15_Init 0 */
+
+  /* USER CODE END TIM15_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM15_Init 1 */
+
+  /* USER CODE END TIM15_Init 1 */
+  htim15.Instance = TIM15;
+  htim15.Init.Prescaler = 0;
+  htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim15.Init.Period = 0;
+  htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim15.Init.RepetitionCounter = 0;
+  htim15.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim15) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim15, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim15, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM15_Init 2 */
+
+  /* USER CODE END TIM15_Init 2 */
+
+}
+
+/**
+  * @brief TIM16 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM16_Init(void)
+{
+
+  /* USER CODE BEGIN TIM16_Init 0 */
+
+  /* USER CODE END TIM16_Init 0 */
+
+  /* USER CODE BEGIN TIM16_Init 1 */
+
+  /* USER CODE END TIM16_Init 1 */
+  htim16.Instance = TIM16;
+  htim16.Init.Prescaler = 0;
+  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim16.Init.Period = 0;
+  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim16.Init.RepetitionCounter = 0;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM16_Init 2 */
+
+  /* USER CODE END TIM16_Init 2 */
+
+}
+
+/**
+  * @brief TIM17 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM17_Init(void)
+{
+
+  /* USER CODE BEGIN TIM17_Init 0 */
+
+  /* USER CODE END TIM17_Init 0 */
+
+  /* USER CODE BEGIN TIM17_Init 1 */
+
+  /* USER CODE END TIM17_Init 1 */
+  htim17.Instance = TIM17;
+  htim17.Init.Prescaler = 0;
+  htim17.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim17.Init.Period = 0;
+  htim17.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim17.Init.RepetitionCounter = 0;
+  htim17.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim17) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM17_Init 2 */
+
+  /* USER CODE END TIM17_Init 2 */
 
 }
 

@@ -14,6 +14,8 @@
 #include <rtthread.h>
 #include <board.h>
 
+#define RT_APP_PART_ADDR 0x08060000
+
 #if defined(BSP_USING_ON_CHIP_FLASH)
 extern const struct fal_flash_dev stm32_onchip_flash;
 #endif /* BSP_USING_ON_CHIP_FLASH */

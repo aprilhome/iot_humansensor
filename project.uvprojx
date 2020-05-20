@@ -14,16 +14,16 @@
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32L475VETx</Device>
+          <Device>STM32L475RGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32L4xx_DFP.2.2.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
-          <Cpu>IRAM(0x20000000,0x00018000) IRAM2(0x10000000,0x00008000) IROM(0x08000000,0x00080000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000,0x00018000) IRAM2(0x10000000,0x00008000) IROM(0x08000000,0x00100000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32L4xx_512 -FS08000000 -FL080000 -FP0($$Device:STM32L475VETx$CMSIS\Flash\STM32L4xx_512.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32L4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32L475RGTx$CMSIS\Flash\STM32L4xx_1024.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32L475VETx$Drivers\CMSIS\Device\ST\STM32L4xx\Include\stm32l4xx.h</RegisterFile>
+          <RegisterFile>$$Device:STM32L475RGTx$Drivers\CMSIS\Device\ST\STM32L4xx\Include\stm32l4xx.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -33,7 +33,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32L475VETx$CMSIS\SVD\STM32L4x5.svd</SFDFile>
+          <SFDFile>$$Device:STM32L475RGTx$CMSIS\SVD\STM32L4x5.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -138,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -209,8 +209,8 @@
             <Ra1Chk>0</Ra1Chk>
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
-            <Im1Chk>0</Im1Chk>
-            <Im2Chk>1</Im2Chk>
+            <Im1Chk>1</Im1Chk>
+            <Im2Chk>0</Im2Chk>
             <OnChipMemories>
               <Ocm1>
                 <Type>0</Type>
@@ -250,7 +250,7 @@
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x80000</Size>
+                <Size>0x100000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -275,7 +275,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x80000</Size>
+                <Size>0x100000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -336,9 +336,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER, STM32L475xx</Define>
+              <Define>USE_HAL_DRIVER, RT_USING_ARM_LIBC, STM32L475xx</Define>
               <Undefine></Undefine>
-              <IncludePath>.;rt-thread\include;.;applications;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;libraries\HAL_Drivers\drv_flash;packages\fal-latest\inc;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\finsh;libraries\STM32L4xx_HAL\STM32L4xx_HAL_Driver\Inc;libraries\STM32L4xx_HAL\CMSIS\Device\ST\STM32L4xx\Include;libraries\STM32L4xx_HAL\CMSIS\Include</IncludePath>
+              <IncludePath>.;rt-thread\include;.;applications;board;board\CubeMX_Config\Inc;board\ports;libraries\HAL_Drivers;libraries\HAL_Drivers\config;libraries\HAL_Drivers\drv_flash;packages\fal-latest\inc;packages\ota_downloader-latest;rt-thread\libcpu\arm\common;rt-thread\libcpu\arm\cortex-m4;rt-thread\components\dfs\include;rt-thread\components\dfs\filesystems\devfs;rt-thread\components\dfs\filesystems\elmfat;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\drivers\spi;rt-thread\components\drivers\include;rt-thread\components\drivers\include;rt-thread\components\finsh;rt-thread\components\libc\compilers\armlibc;rt-thread\components\libc\compilers\common;rt-thread\components\utilities\ymodem;libraries\STM32L4xx_HAL\STM32L4xx_HAL_Driver\Inc;libraries\STM32L4xx_HAL\CMSIS\Device\ST\STM32L4xx\Include;libraries\STM32L4xx_HAL\CMSIS\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -463,9 +463,44 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
+              <FileName>api_gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\api_gps.c</FilePath>
+            </File>
+            <File>
+              <FileName>api_pm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\api_pm.c</FilePath>
+            </File>
+            <File>
+              <FileName>api_sd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\api_sd.c</FilePath>
+            </File>
+            <File>
+              <FileName>api_temp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\api_temp.c</FilePath>
+            </File>
+            <File>
+              <FileName>api_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\api_timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_board.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\drv_board.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\test.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -498,9 +533,9 @@
               <FilePath>libraries\HAL_Drivers\drv_usart.c</FilePath>
             </File>
             <File>
-              <FileName>drv_pwm.c</FileName>
+              <FileName>drv_hwtimer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>libraries\HAL_Drivers\drv_pwm.c</FilePath>
+              <FilePath>libraries\HAL_Drivers\drv_hwtimer.c</FilePath>
             </File>
             <File>
               <FileName>drv_spi.c</FileName>
@@ -508,14 +543,14 @@
               <FilePath>libraries\HAL_Drivers\drv_spi.c</FilePath>
             </File>
             <File>
-              <FileName>drv_soft_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>libraries\HAL_Drivers\drv_soft_i2c.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\HAL_Drivers\drv_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\HAL_Drivers\drv_rtc.c</FilePath>
             </File>
             <File>
               <FileName>drv_flash_l4.c</FileName>
@@ -574,10 +609,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls> --c99</MiscControls>
+                  <MiscControls></MiscControls>
                   <Define> </Define>
                   <Undefine> </Undefine>
-                  <IncludePath></IncludePath>
+                  <IncludePath> </IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -624,6 +659,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>ota_downloader</GroupName>
+          <Files>
+            <File>
+              <FileName>ymodem_ota.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>packages\ota_downloader-latest\src\ymodem_ota.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>cpu</GroupName>
           <Files>
             <File>
@@ -650,6 +695,61 @@
               <FileName>context_rvds.S</FileName>
               <FileType>2</FileType>
               <FilePath>rt-thread\libcpu\arm\cortex-m4\context_rvds.S</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Filesystem</GroupName>
+          <Files>
+            <File>
+              <FileName>dfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\src\dfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>dfs_file.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\src\dfs_file.c</FilePath>
+            </File>
+            <File>
+              <FileName>dfs_fs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\src\dfs_fs.c</FilePath>
+            </File>
+            <File>
+              <FileName>dfs_posix.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\src\dfs_posix.c</FilePath>
+            </File>
+            <File>
+              <FileName>poll.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\src\poll.c</FilePath>
+            </File>
+            <File>
+              <FileName>select.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\src\select.c</FilePath>
+            </File>
+            <File>
+              <FileName>devfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\filesystems\devfs\devfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>dfs_elm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\filesystems\elmfat\dfs_elm.c</FilePath>
+            </File>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\filesystems\elmfat\ff.c</FilePath>
+            </File>
+            <File>
+              <FileName>ccsbcs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\dfs\filesystems\elmfat\option\ccsbcs.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -701,7 +801,7 @@
                   <MiscControls></MiscControls>
                   <Define> </Define>
                   <Undefine> </Undefine>
-                  <IncludePath></IncludePath>
+                  <IncludePath> </IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
@@ -725,6 +825,11 @@
             </GroupArmAds>
           </GroupOption>
           <Files>
+            <File>
+              <FileName>hwtimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\hwtimer\hwtimer.c</FilePath>
+            </File>
             <File>
               <FileName>i2c_core.c</FileName>
               <FileType>1</FileType>
@@ -751,9 +856,14 @@
               <FilePath>rt-thread\components\drivers\misc\adc.c</FilePath>
             </File>
             <File>
-              <FileName>rt_drv_pwm.c</FileName>
+              <FileName>rtc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>rt-thread\components\drivers\misc\rt_drv_pwm.c</FilePath>
+              <FilePath>rt-thread\components\drivers\rtc\rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>alarm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\rtc\alarm.c</FilePath>
             </File>
             <File>
               <FileName>serial.c</FileName>
@@ -769,6 +879,11 @@
               <FileName>spi_dev.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\drivers\spi\spi_dev.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_msd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\drivers\spi\spi_msd.c</FilePath>
             </File>
             <File>
               <FileName>completion.c</FileName>
@@ -839,6 +954,51 @@
               <FileName>msh_file.c</FileName>
               <FileType>1</FileType>
               <FilePath>rt-thread\components\finsh\msh_file.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>libc</GroupName>
+          <Files>
+            <File>
+              <FileName>libc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\libc\compilers\armlibc\libc.c</FilePath>
+            </File>
+            <File>
+              <FileName>mem_std.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\libc\compilers\armlibc\mem_std.c</FilePath>
+            </File>
+            <File>
+              <FileName>stdio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\libc\compilers\armlibc\stdio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stubs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\libc\compilers\armlibc\stubs.c</FilePath>
+            </File>
+            <File>
+              <FileName>time.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\libc\compilers\armlibc\time.c</FilePath>
+            </File>
+            <File>
+              <FileName>gmtime_r.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\libc\compilers\common\gmtime_r.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Utilities</GroupName>
+          <Files>
+            <File>
+              <FileName>ymodem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>rt-thread\components\utilities\ymodem\ymodem.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -999,6 +1159,16 @@
               <FileName>stm32l4xx_hal_adc_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>libraries\STM32L4xx_HAL\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_adc_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l4xx_hal_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32L4xx_HAL\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l4xx_hal_rtc_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>libraries\STM32L4xx_HAL\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_rtc_ex.c</FilePath>
             </File>
             <File>
               <FileName>stm32l4xx_hal_flash.c</FileName>

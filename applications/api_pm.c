@@ -587,5 +587,32 @@ void pm_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *arg
     for (uint i = 0; i < 6; i++)
     {
         hr_printf("%c", a[i]);
+        rt_kprintf("%c", a[i]);
     }
 }
+
+void ts_hr(int argc, char *argv[])
+{
+    char a[6] = {0xfd, 0, 0, 0, 0, 0};
+    for (uint i = 0; i < 6; i++)
+    {
+        hr_printf("%c", a[i]);
+//        rt_kprintf("%c", a[i]);
+    }
+    
+    //等待数据
+    if (rt_sem_take(g_ts_temp_sem, 1500) == RT_EOK)
+    {
+        //等待后把数据发出来
+        for (rt_uint16_t i = 0; i < g_temp_data.len; i++)
+        {
+            rt_kprintf("%c", g_temp_data.data[i]);
+        }
+    }
+    else
+    {
+        rt_kprintf("$err %d\r\n", 1);
+    }
+}
+/* 导 出 到 msh 命 令 列 表 中 */
+MSH_CMD_EXPORT(ts_hr, ts);

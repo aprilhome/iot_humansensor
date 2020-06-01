@@ -150,7 +150,7 @@ int main(void)
                                                temp_execute_thread_entry,
                                                RT_NULL,
                                                1024,
-                                               23,
+                                               18,
                                                10);
     if (pm_thread != RT_NULL)
     {
@@ -178,20 +178,20 @@ int main(void)
     }
     
     //线程：一次采集完成存储
-    rt_thread_t sample_thread = rt_thread_create("sample_thread",
-                                                 sample_thread_entry,
-                                                 RT_NULL,
-                                                 4096,
-                                                 27,
-                                                 10);
-    if (sample_thread != RT_NULL)
-    {
-        rt_thread_startup(sample_thread);
-    }
-    else
-    {
-        return RT_ERROR;
-    }    
+//    rt_thread_t sample_thread = rt_thread_create("sample_thread",
+//                                                 sample_thread_entry,
+//                                                 RT_NULL,
+//                                                 4096,
+//                                                 27,
+//                                                 10);
+//    if (sample_thread != RT_NULL)
+//    {
+//        rt_thread_startup(sample_thread);
+//    }
+//    else
+//    {
+//        return RT_ERROR;
+//    }    
     
     return RT_EOK;
 }

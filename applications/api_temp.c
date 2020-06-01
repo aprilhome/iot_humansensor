@@ -18,7 +18,7 @@
 static rt_device_t g_temp_uart_device = RT_NULL;
 static rt_sem_t    g_temp_uart_sem = RT_NULL;
 static uart_receive_t     g_temp_uart_receive = {{0}, 0, {0}, 0, STATE_IDLE};
-
+rt_sem_t g_ts_temp_sem = RT_NULL;
 temp_t g_temp_data = {{0}, 0};
 rt_uint16_t data_len = 0;
 /**
@@ -53,7 +53,7 @@ static rt_err_t temp_uart_receive_callback(rt_device_t dev,rt_size_t size)
                     g_temp_uart_receive.len  = 0;
                     break;
                 }
-                if (g_temp_uart_receive.len >= 6)
+                if (g_temp_uart_receive.len >= 5)
                 {
                     g_temp_uart_receive.flag = STATE_IDLE;
                     g_temp_uart_receive.buff[g_temp_uart_receive.len++] = ch; 
@@ -92,17 +92,21 @@ void temp_execute_thread_entry(void *parameter)
             g_temp_data.data[i] = g_temp_uart_receive.buff[i];
         }
         g_temp_data.len = i;
-        rt_event_send(g_sample_event, EVENT_TEMP_RECV);
-        if ((SYSINFO.mode == MODE_SLEEP) || (SYSINFO.mode == MODE_NORMAL) || 
-            (SYSINFO.mode == MODE_AUTO))
-        {
-            config_pm_t(1);
-            for (uint j = 0; j < g_temp_data.len; j++)
-            {
-                pm_printf("%c", g_temp_data.data[j]);
-            }
-            config_pm_t(0);
-        }
+        g_temp_uart_receive.len = 0;
+//        rt_event_send(g_sample_event, EVENT_TEMP_RECV);
+//        if ((SYSINFO.mode == MODE_SLEEP) || (SYSINFO.mode == MODE_NORMAL) || 
+//            (SYSINFO.mode == MODE_AUTO))
+//        {
+////            config_pm_t(1);
+////            pm_printf("hr:");
+//            for (uint j = 0; j < g_temp_data.len; j++)
+//            {
+////                pm_printf("%c", g_temp_data.data[j]);
+//                rt_kprintf("%c", g_temp_data.data[j]);
+//            }
+////            config_pm_t(0);
+//        }
+        rt_sem_release(g_ts_temp_sem);  
         rt_thread_mdelay(20);
     }
 }
@@ -148,6 +152,7 @@ int init_uart_temp(const char *name, rt_uint32_t bound)
     }
     //5初始化信号量
     g_temp_uart_sem = rt_sem_create("temp_uart_sem", 0, RT_IPC_FLAG_FIFO);
+    g_ts_temp_sem = rt_sem_create("temp_ts_sem", 0, RT_IPC_FLAG_FIFO);
     
     pm_printf("temp uart initialized ok\r\n");
     return RT_EOK;   

@@ -63,13 +63,13 @@ void config_pm_t(uint8_t a)
 {
     if (a == 0)
     {
-        rt_thread_mdelay(2);
+//        rt_thread_mdelay(2);
         rt_pin_write(EN_485_LPUART1_T_PIN, PIN_LOW);
     }
     else
     {
         rt_pin_write(EN_485_LPUART1_T_PIN, PIN_HIGH);
-        rt_thread_mdelay(2);
+//        rt_thread_mdelay(2);
     }   
 }
 

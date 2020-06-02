@@ -226,6 +226,13 @@
 #define BSP_USING_ON_CHIP_FLASH
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
+#define BSP_USING_I2C
+#define BSP_USING_I2C3
+
+/* Notice: PC11 --> 43; PC10 --> 42 */
+
+#define BSP_I2C3_SCL_PIN 43
+#define BSP_I2C3_SDA_PIN 42
 #define BSP_USING_TIM
 #define BSP_USING_TIM15
 #define BSP_USING_ADC

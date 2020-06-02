@@ -28,6 +28,7 @@ typedef unsigned long ulong;
 #define ERR_HR     (-5)
 #define ERR_PROCESS     (-6)    //程序执行错误
 #define ERR_GPS         (-7)
+#define ERR_TEMP     (-10)
 
 
 /* 传感器类型 */

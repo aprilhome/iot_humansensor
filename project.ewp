@@ -2340,6 +2340,9 @@
             <name>$PROJ_DIR$\libraries\HAL_Drivers\drv_rtc.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\libraries\HAL_Drivers\drv_soft_i2c.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\libraries\HAL_Drivers\drv_spi.c</name>
         </file>
         <file>

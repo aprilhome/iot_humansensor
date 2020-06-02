@@ -189,33 +189,33 @@ menu "On-chip Peripheral Drivers"
                 endif
 				
 			menuconfig BSP_USING_I2C2
-                bool "Enable I2C2 BUS (TEMP)"
+                bool "Enable I2C2 BUS"
                 default y
                 if BSP_USING_I2C2
-                    comment "Notice: PC11 --> 43; PC10 --> 42" 
+                    comment "Notice: PC8 --> 40; PC9 --> 41" 
                     config BSP_I2C2_SCL_PIN
                         int "i2c2 scl pin number"
                         range 1 176
-                        default 43
+                        default 40
                     config BSP_I2C2_SDA_PIN
                         int "I2C2 sda pin number"
                         range 1 176
-                        default 42
+                        default 41
                 endif	
 				
             menuconfig BSP_USING_I2C3
-                bool "Enable I2C3 BUS (HR)"
+                bool "Enable I2C3 BUS"
                 default y
                 if BSP_USING_I2C3
-                    comment "Notice: PC8 --> 40; PC9 --> 41" 
+                    comment "Notice: PC11 --> 43; PC10 --> 42" 
                     config BSP_I2C3_SCL_PIN
                         int "i2c3 scl pin number"
                         range 1 176
-                        default 40
+                        default 43
                     config BSP_I2C3_SDA_PIN
                         int "I2C3 sda pin number"
                         range 1 176
-                        default 41
+                        default 42
                 endif
 
             menuconfig BSP_USING_I2C4

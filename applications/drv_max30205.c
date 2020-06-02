@@ -128,9 +128,17 @@ void max30205_init(void)
 float read_max30205_temperature(void)
 {
     rt_uint8_t read[2] = {0};
-    max30205_read_reg(MAX30205_TEMPERATURE, 2, read);
+    int ret = 0;
+    ret = max30205_read_reg(MAX30205_TEMPERATURE, 2, read);
 
-    rt_int16_t raw = read[0] << 8 | read[1];
-    float temperature = raw * 0.00390625;
-    return temperature;
+    if (ret == RT_EOK)
+    {
+        rt_int16_t raw = read[0] << 8 | read[1];
+        float temperature = raw * 0.00390625;
+        return temperature;
+    }
+    else
+    {        
+        return -100;
+    }
 }

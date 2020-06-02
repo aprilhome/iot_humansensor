@@ -23,7 +23,8 @@
 #include "api_gps.h"
 #include "api_temp.h"
 #include "api_timer.h"
-
+#include "drv_max30205.h"
+     
 /* 系统状态信息及fal分区地址 */
 sys_info_t g_sysinfo = {0};
 const struct fal_partition *g_sysinfo_partition = RT_NULL;
@@ -59,6 +60,8 @@ int main(void)
     init_uart_gps("uart4", 9600);
     init_uart_temp("uart1", 115200);
     init_timer("timer15");
+    
+    max30205_init();
     
     /* 根据断电前工作模式，是否开启定时器 */
     switch (SYSINFO.mode)

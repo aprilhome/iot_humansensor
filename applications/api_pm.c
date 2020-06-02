@@ -24,6 +24,7 @@
 #include "api_gps.h"
 #include "api_timer.h"
 #include "api_temp.h"
+#include "drv_max30205.h"
 
 extern char g_sample[1024];
 extern rt_uint16_t g_sample_len;
@@ -35,6 +36,7 @@ const struct uart_execute g_pm_get_cmd[] =
     {"$setmode",          pm_set_mode},
     {"$gethr",            pm_takesample},    
     {"$getgps",           pm_getgps},
+    {"$gettemp",          pm_gettemp},
     {"$getlast",          pm_getlast},
 };
 
@@ -613,6 +615,20 @@ void pm_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *arg
     else
     {
         pm_printf("$err %d\r\n", ERR_HR);
+    }
+}
+
+void pm_gettemp(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
+{
+    float temp = 0;
+    temp = read_max30205_temperature();
+    if (temp == -100)
+    {
+        pm_printf("$err %d\r\n", ERR_TEMP);
+    }
+    else
+    {
+        pm_printf("$%.1f\r\n", temp);
     }
 }
 

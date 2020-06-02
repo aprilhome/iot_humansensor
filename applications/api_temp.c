@@ -93,19 +93,7 @@ void temp_execute_thread_entry(void *parameter)
         }
         g_temp_data.len = i;
         g_temp_uart_receive.len = 0;
-//        rt_event_send(g_sample_event, EVENT_TEMP_RECV);
-//        if ((SYSINFO.mode == MODE_SLEEP) || (SYSINFO.mode == MODE_NORMAL) || 
-//            (SYSINFO.mode == MODE_AUTO))
-//        {
-////            config_pm_t(1);
-////            pm_printf("hr:");
-//            for (uint j = 0; j < g_temp_data.len; j++)
-//            {
-////                pm_printf("%c", g_temp_data.data[j]);
-//                rt_kprintf("%c", g_temp_data.data[j]);
-//            }
-////            config_pm_t(0);
-//        }
+        rt_event_send(g_sample_event, EVENT_TEMP_RECV);
         rt_sem_release(g_ts_temp_sem);  
         rt_thread_mdelay(20);
     }

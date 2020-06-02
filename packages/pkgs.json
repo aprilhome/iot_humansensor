@@ -8,5 +8,10 @@
   "path": "/packages/system/fal", 
   "ver": "latest", 
   "name": "FAL"
+ }, 
+ {
+  "path": "/packages/system/syswatch", 
+  "ver": "latest", 
+  "name": "SYSWATCH"
  }
 ]

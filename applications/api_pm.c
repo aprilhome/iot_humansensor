@@ -428,9 +428,17 @@ void pm_set_interval (char *argv1, char *argv2, char *argv3, char *argv4, char *
 **/
 void pm_export(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
+    if (g_pm_uart_receive.argc != 2)
+    {
+        pm_printf("$err %d\r\n",ERR_PARA);
+        return;
+    }
+    
+    //取出文件名字，由于未开启相对路径，故需添加绝对路径名
     char name[SD_FILE_NAME_LEN] = "/";
     strcat(name, argv1);
     
+    //串口输出数据
     uint32_t length;
     char buffer[81];
     int fd;
@@ -438,22 +446,25 @@ void pm_export(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, 
     fd = open(name, O_RDONLY);
     if (fd < 0)
     {
-        pm_printf("$err %d\r\n",ERR_PARA);
+        pm_printf("$err %d\r\n",ERR_SD);
         return;
-    }
-    
+    }    
     do
     {
         memset(buffer, 0, sizeof(buffer));
         length = read(fd, buffer, sizeof(buffer) - 1);
+        rt_thread_mdelay(1);
         if (length > 0)
         {
-            pm_printf("%s", buffer);
+            for (uint16_t i = 0; i < length; i++)
+            {
+                pm_printf("%c", buffer[i]);
+            }
         }
     }
-    while (length > 0);
-    
+    while (length > 0);    
     close(fd);    
+    pm_printf("$upload done\r\n");
 }
 
 void pm_format(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
@@ -587,7 +598,21 @@ void pm_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *arg
     for (uint i = 0; i < 6; i++)
     {
         hr_printf("%c", a[i]);
-        rt_kprintf("%c", a[i]);
+//        rt_kprintf("%c", a[i]);
+    }
+    
+    //等待数据
+    if (rt_sem_take(g_ts_temp_sem, 1500) == RT_EOK)
+    {
+        //等待后把数据发出来
+        for (rt_uint16_t i = 0; i < g_temp_data.len; i++)
+        {
+            pm_printf("%c", g_temp_data.data[i]);
+        }
+    }
+    else
+    {
+        pm_printf("$err %d\r\n", ERR_HR);
     }
 }
 

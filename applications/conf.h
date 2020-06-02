@@ -25,7 +25,7 @@ typedef unsigned long ulong;
 #define ERR_FLASH       (-4)    //FLASH读写错误
 #define ERR_SD          (-8)    //SD卡读写错误
 #define ERR_RTC         (-9)    //RTC读写错误
-#define ERR_GC_DATA     (-5)
+#define ERR_HR     (-5)
 #define ERR_PROCESS     (-6)    //程序执行错误
 #define ERR_GPS         (-7)
 

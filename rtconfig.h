@@ -106,6 +106,7 @@
 #define RT_USING_ALARM
 #define RT_USING_SPI
 #define RT_USING_SPI_MSD
+#define RT_USING_WDT
 
 /* Using WiFi */
 
@@ -182,6 +183,18 @@
 #define FAL_PART_HAS_TABLE_CFG
 #define PKG_USING_FAL_LATEST_VERSION
 #define PKG_FAL_VER_NUM 0x99999
+#define PKG_USING_SYSWATCH
+#define SYSWATCH_EXCEPT_RESOLVE_MODE_2
+#define SYSWATCH_EXCEPT_RESOLVE_MODE 2
+#define SYSWATCH_EXCEPT_TIMEOUT 5
+#define SYSWATCH_EXCEPT_CONFIRM_TMO 5
+#define SYSWATCH_EXCEPT_RESUME_DLY 5
+#define SYSWATCH_THREAD_PRIO 0
+#define SYSWATCH_THREAD_STK_SIZE 512
+#define SYSWATCH_THREAD_NAME "syswatch"
+#define SYSWATCH_WDT_NAME "wdt"
+#define SYSWATCH_WDT_TIMEOUT 5
+#define PKG_USING_SYSWATCH_LATEST_VERSION
 
 /* peripheral libraries and drivers */
 
@@ -219,6 +232,7 @@
 #define BSP_USING_ADC1
 #define BSP_USING_ONCHIP_RTC
 #define BSP_RTC_USING_LSE
+#define BSP_USING_WDT
 
 /* Board extended module Drivers */
 

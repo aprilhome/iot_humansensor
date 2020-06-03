@@ -21,7 +21,7 @@
 #include "conf.h"
 #include "api_pm.h"
 #include "api_gps.h"
-#include "api_temp.h"
+#include "api_hr.h"
 #include "api_timer.h"
 #include "drv_max30205.h"
      
@@ -58,7 +58,7 @@ int main(void)
 
     init_uart_pm("lpuart1", SYSINFO.bound);
     init_uart_gps("uart4", 9600);
-    init_uart_temp("uart1", 115200);
+    init_uart_hr("uart1", 115200);
     init_timer("timer15");
     
     max30205_init();
@@ -149,15 +149,15 @@ int main(void)
     }
     
     //线程：温度数据及GPS数据存储
-    rt_thread_t temp_thread = rt_thread_create("temp_thread",
-                                               temp_execute_thread_entry,
+    rt_thread_t hr_thread = rt_thread_create("hr_thread",
+                                               hr_execute_thread_entry,
                                                RT_NULL,
                                                1024,
                                                18,
                                                10);
     if (pm_thread != RT_NULL)
     {
-        rt_thread_startup(temp_thread);
+        rt_thread_startup(hr_thread);
     }
     else
     {
@@ -231,10 +231,10 @@ static void sample_thread_entry(void *parameter)
     while (1)
     {
         rt_uint32_t e;
-        rt_event_recv(g_sample_event, (EVENT_TEMP_RECV | EVENT_GPS_RECV), 
+        rt_event_recv(g_sample_event, (EVENT_HR_RECV | EVENT_GPS_RECV), 
                      (RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR), RT_WAITING_FOREVER, &e);
         
-        //写入sd卡,包括gps数据g_gps_data,包括temp数据g_temp_data
+        //写入sd卡,包括gps数据g_gps_data,包括hr数据g_hr_data
         char name[20] = {0};
         sprintf(name, "/%02d%02d%02d.dat", g_gps_data.year, g_gps_data.month, g_gps_data.day);
         int fd = open(name, O_WRONLY | O_CREAT | O_APPEND);
@@ -251,9 +251,9 @@ static void sample_thread_entry(void *parameter)
                                g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew, 
                                g_gps_data.speed, g_gps_data.direction, g_gps_data.mode);
 
-            memcpy(data + data_len, g_temp_data.data, g_temp_data.len);
+            memcpy(data + data_len, g_hr_data.data, g_hr_data.len);
             
-            ret = write(fd, data, data_len + g_temp_data.len);
+            ret = write(fd, data, data_len + g_hr_data.len);
             if (ret > 0)
             {
                 rt_kprintf("sd write successed\n");

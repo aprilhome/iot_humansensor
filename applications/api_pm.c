@@ -23,7 +23,7 @@
 #include "api_pm.h"
 #include "api_gps.h"
 #include "api_timer.h"
-#include "api_temp.h"
+#include "api_hr.h"
 #include "drv_max30205.h"
 
 extern char g_sample[1024];
@@ -34,10 +34,10 @@ const struct uart_execute g_pm_get_cmd[] =
     {"$ds",               pm_ds},
     {"$gettime",          pm_gettime},
     {"$setmode",          pm_set_mode},
-    {"$gethr",            pm_takesample},    
+    {"$ts_hr",            pm_ts_hr},    
+    {"$ts_temp",          pm_ts_temp},
     {"$getgps",           pm_getgps},
-    {"$gettemp",          pm_gettemp},
-    {"$getlast",          pm_getlast},
+    {"$ts",               pm_ts},
 };
 
 const struct uart_execute g_pm_set_cmd[] = 
@@ -339,36 +339,23 @@ void pm_gettime(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5,
     pm_printf("%s", ctime(&now));
 }
 
-void pm_getgps(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
-{   
-    rt_uint32_t e;
-    rt_event_recv(g_sample_event, EVENT_GPS_RECV, RT_EVENT_FLAG_AND , 
-                  rt_tick_from_millisecond(1500), &e);
-    
-    pm_printf("gps %c\r\n%02d-%02d-%02d %02d:%02d:%02d\r\n", g_gps_data.status,
-              g_gps_data.year, g_gps_data.month, g_gps_data.day,
-              g_gps_data.hour, g_gps_data.minute, g_gps_data.second);
-    pm_printf("latitude:%lf, %c\r\n", g_gps_data.latitude, g_gps_data.ns);
-    pm_printf("longitude:%lf, %c\r\n", g_gps_data.longitude, g_gps_data.ew);
-    pm_printf("speed:%f, %f\r\n", g_gps_data.speed, g_gps_data.direction);
-    pm_printf("pos_mode:%c\r\n", g_gps_data.mode);
-}
+
 
 void pm_getlast(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
-    char data[1024] = {0};
-    rt_uint16_t data_len = 0;
-    data_len = sprintf(data, "$GNRMC %02d-%02d-%02d %02d:%02d:%02d %f %c %f %c %f %f %c\r\n",
-                       g_gps_data.year, g_gps_data.month, g_gps_data.day, 
-                       g_gps_data.hour, g_gps_data.minute, g_gps_data.second, 
-                       g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew, 
-                       g_gps_data.speed, g_gps_data.direction, g_gps_data.mode);
-    
-    memcpy(data + data_len, g_temp_data.data, g_temp_data.len);
-    for (rt_uint16_t i = 0; i < data_len + g_temp_data.len; i++)
-    {
-        pm_printf("%c", data[i]);
-    }
+//    char data[1024] = {0};
+//    rt_uint16_t data_len = 0;
+//    data_len = sprintf(data, "$GNRMC %02d-%02d-%02d %02d:%02d:%02d %f %c %f %c %f %f %c\r\n",
+//                       g_gps_data.year, g_gps_data.month, g_gps_data.day, 
+//                       g_gps_data.hour, g_gps_data.minute, g_gps_data.second, 
+//                       g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew, 
+//                       g_gps_data.speed, g_gps_data.direction, g_gps_data.mode);
+//    
+//    memcpy(data + data_len, g_hr_data.data, g_hr_data.len);
+//    for (rt_uint16_t i = 0; i < data_len + g_hr_data.len; i++)
+//    {
+//        pm_printf("%c", data[i]);
+//    }
 }
 
 void pm_set_baudrate(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
@@ -594,23 +581,30 @@ void pm_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
     pm_printf("$mode %d\r\n",SYSINFO.mode);
 }
 
-void pm_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
+/**
+  * @brief    采集一次心率血压数据，指令响应时间小于20ms
+              佩戴好后约10秒后可以正常输出 
+              显示为0或255说明没有接触人体
+  * @param        
+  * @retval      
+  * @logs   
+  * date        author        notes
+  * 2020/6/3  Aprilhome
+**/
+void pm_ts_hr(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
+    //发送读取心率指令
     char a[6] = {0xfd, 0, 0, 0, 0, 0};
     for (uint i = 0; i < 6; i++)
     {
         hr_printf("%c", a[i]);
-//        rt_kprintf("%c", a[i]);
     }
     
-    //等待数据
-    if (rt_sem_take(g_ts_temp_sem, 1500) == RT_EOK)
+    //等待数据，超时500ms
+    if (rt_sem_take(g_ts_hr_sem, 500) == RT_EOK)
     {
         //等待后把数据发出来
-        for (rt_uint16_t i = 0; i < g_temp_data.len; i++)
-        {
-            pm_printf("%c", g_temp_data.data[i]);
-        }
+        pm_printf("%3d %3d %3d\r\n", g_hr_data.systolic_pressure, g_hr_data.diastolic_pressure, g_hr_data.hr);
     }
     else
     {
@@ -618,42 +612,87 @@ void pm_takesample(char *argv1, char *argv2, char *argv3, char *argv4, char *arg
     }
 }
 
-void pm_gettemp(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
+void pm_ts_temp(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
     float temp = 0;
     temp = read_max30205_temperature();
-    if (temp == -100)
+    if ((temp + 100) < 1)
     {
         pm_printf("$err %d\r\n", ERR_TEMP);
     }
     else
     {
-        pm_printf("$%.1f\r\n", temp);
+        pm_printf("%.1f\r\n", temp);
     }
 }
 
-void ts_hr(int argc, char *argv[])
+void pm_getgps(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
+{   
+    rt_uint32_t e;
+    rt_event_recv(g_sample_event, EVENT_GPS_RECV, RT_EVENT_FLAG_AND , 
+                  rt_tick_from_millisecond(1500), &e);
+    
+    pm_printf("gps %c\r\n%02d-%02d-%02d %02d:%02d:%02d\r\n", g_gps_data.status,
+              g_gps_data.year, g_gps_data.month, g_gps_data.day,
+              g_gps_data.hour, g_gps_data.minute, g_gps_data.second);
+    pm_printf("latitude:%lf, %c\r\n", g_gps_data.latitude, g_gps_data.ns);
+    pm_printf("longitude:%lf, %c\r\n", g_gps_data.longitude, g_gps_data.ew);
+    pm_printf("speed:%f, %f\r\n", g_gps_data.speed, g_gps_data.direction);
+    pm_printf("pos_mode:%c\r\n", g_gps_data.mode);
+}
+
+/**
+  * @brief    读取hr,temp,gps数据并输出
+              若hr或temp接收异常，则输出为0
+  * @param        
+  * @retval      
+  * @logs   
+  * date        author        notes
+  * 2020/6/3  Aprilhome
+**/
+void pm_ts(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
+    //发送读取心率指令
     char a[6] = {0xfd, 0, 0, 0, 0, 0};
     for (uint i = 0; i < 6; i++)
     {
         hr_printf("%c", a[i]);
-//        rt_kprintf("%c", a[i]);
     }
     
-    //等待数据
-    if (rt_sem_take(g_ts_temp_sem, 1500) == RT_EOK)
+    //发送读取温度指令
+    float temp = 0;
+    temp = read_max30205_temperature();
+    if  ((temp + 100) < 1)
+    {
+        temp = 0.0;
+    }
+    
+    /* 获取时间 */
+    time_t now;
+    now = time(RT_NULL);
+    struct tm *time;   
+    time = localtime(&now);   
+    
+    //等待数据，超时500ms
+    if (rt_sem_take(g_ts_hr_sem, 500) == RT_EOK)
     {
         //等待后把数据发出来
-        for (rt_uint16_t i = 0; i < g_temp_data.len; i++)
-        {
-            rt_kprintf("%c", g_temp_data.data[i]);
-        }
+        pm_printf("%.1f %3d %3d %3d %lf %c %lf %c ", 
+                  temp, g_hr_data.systolic_pressure, g_hr_data.diastolic_pressure, g_hr_data.hr,
+                  g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew);
     }
     else
     {
-        rt_kprintf("$err %d\r\n", 1);
+         //等待后把数据发出来
+        pm_printf("%.1f %3d %3d %3d %lf %c %lf %c\r\n", 
+                  temp, 0, 0, 0,
+                  g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew);
+
     }
+    
+    pm_printf("%02d-%02d-%02d %02d:%02d:%02d\r\n", 
+              time->tm_year - 100, time->tm_mon + 1, time->tm_mday,
+              time->tm_hour, time->tm_min, time->tm_sec);
 }
-/* 导 出 到 msh 命 令 列 表 中 */
-MSH_CMD_EXPORT(ts_hr, ts);
+
+

@@ -53,8 +53,8 @@ typedef enum
 #define MAX_RECEIVE_LEN_GPS     128
 #define MAX_RECEIVE_ARGC_GPS    20
 
-#define MAX_RECEIVE_LEN_TEMP    512
-#define MAX_RECEIVE_ARGC_TEMP   128
+#define MAX_RECEIVE_LEN_HR    512
+#define MAX_RECEIVE_ARGC_HR   128
 
 #define RECEIVE_LEN             512
 #define RECEIVE_ARGC            20

@@ -41,7 +41,7 @@ typedef unsigned long ulong;
 
 /* 事件集 */
 //温度接收事件
-#define EVENT_TEMP_RECV      (1<<0)
+#define EVENT_HR_RECV      (1<<0)
 #define EVENT_GPS_RECV       (1<<1)
 
 #define SD_FILE_NAME_LEN      256

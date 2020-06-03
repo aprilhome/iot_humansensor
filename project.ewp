@@ -2163,10 +2163,13 @@
     <group>
         <name>Applications</name>
         <file>
-            <name>$PROJ_DIR$\applications\algorithm.c</name>
+            <name>$PROJ_DIR$\applications\api_gps.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\applications\api_gps.c</name>
+            <name>$PROJ_DIR$\applications\api_hr.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\applications\api_hr.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\applications\api_pm.c</name>
@@ -2175,16 +2178,10 @@
             <name>$PROJ_DIR$\applications\api_sd.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\applications\api_temp.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\applications\api_timer.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\applications\drv_board.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\applications\drv_max30102.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\applications\drv_max30205.c</name>

@@ -21,5 +21,6 @@ void pm_getlast(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5,
 void pm_ts_hr(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6);
 void pm_ts_temp(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6);
 void pm_ts(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6);
+void pm_set_save(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6);
 #endif
 

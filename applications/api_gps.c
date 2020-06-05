@@ -318,8 +318,9 @@ void gps_execute_thread_entry(void *parameter)
             static rt_uint8_t first = 0; // 静态变量使上电第一次运行时进行校时
             // 上电,24点/12点校时
             if ((first == 0) || 
-                 ((g_gps_data.hour == 12) || (g_gps_data.hour == 24) && 
-                  (g_gps_data.minute == 0) && (g_gps_data.second == 0)))
+                (((g_gps_data.hour == 12) || (g_gps_data.hour == 24)) && 
+                 (g_gps_data.minute == 0) && 
+                 (g_gps_data.second == 0)))
             {
                 set_date(g_gps_data.year + 2000, g_gps_data.month, g_gps_data.day);
                 set_time(g_gps_data.hour, g_gps_data.minute, g_gps_data.second);

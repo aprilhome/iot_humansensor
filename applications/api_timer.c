@@ -11,6 +11,7 @@
 #include <board.h>
 
 #include "drv_board.h"
+#include "api_pm.h"
 
 static rt_device_t g_hw_dev = RT_NULL;       /* 定时器设备句柄 */
 static rt_sem_t g_hwtimer_sem = RT_NULL;
@@ -34,12 +35,11 @@ void hwtimer_thread_entry(void *parameter)
     while (1)
     {
         rt_sem_take(g_hwtimer_sem, RT_WAITING_FOREVER);
-        rt_uint8_t send[10] = {0xEB, 0x90, 0x76, 0x00, 0x04, 0x00, 0x00, 0x00, 0x01, 0x00};
-        for (rt_uint16_t i = 0; i < 10; i++)
-        {
-            u4_printf("%c", send[i]);
-        }
-//        rt_kprintf("hwtimer timeout\n");
+        
+        config_pm_t(1);
+        pm_ts(0, 0, 0, 0, 0, 0);
+        config_pm_t(0);        
+        
         rt_thread_mdelay(20);
     }
 }

@@ -142,7 +142,9 @@ struct uart_execute_long
 
 extern sys_info_t g_sysinfo;
 extern rt_event_t  g_sample_event;
-
+extern rt_event_t  g_save_data_event;
+extern struct rt_ringbuffer *g_sd_buff;
+extern rt_mutex_t g_ringbuffer_mutex;
 int config_sysinfo(sys_info_t *info);
 
 #endif

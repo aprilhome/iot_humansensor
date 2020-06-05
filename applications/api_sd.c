@@ -5,6 +5,7 @@
 #include <dfs_posix.h>
 
 #include "conf.h"
+#include "api_sd.h"
 
 int write_sysinfo(void)
 {
@@ -30,37 +31,42 @@ int write_sysinfo(void)
     return ret;
 }
 
-rt_int8_t write_sd(char *data, rt_uint16_t len)
+/**
+  * @brief     将环形缓冲区数据写入sd卡，注意阈值和环形缓冲区大小是宏定义   
+  * @param     struct rt_ringbuffer *buff：环形缓冲区   
+  * @retval    0：成功；-1失败  
+  * @logs   
+  * date        author        notes
+  * 2020/5/22  Aprilhome
+**/
+int write_data_sd(struct rt_ringbuffer *buff)
 {
-    /* 以读写方式打开文件，若不存在则创建该文件 */
-    int fd = open("/1.dat", O_WRONLY | O_CREAT | O_APPEND);
-    //打开成功
+    rt_uint8_t  writebuffer[THRESHOLD] = {0};
+    rt_size_t size;
+    
+    //获取文件名，每天一个文件
+    time_t now;
+    now = time(RT_NULL);
+    struct tm *time;   
+    time = localtime(&now);
+    
+    char name[20] = {0};
+    sprintf(name, "/%02d%02d%02d.dat", time->tm_year - 100,  time->tm_mon + 1, time->tm_mday);
+    
+    //打开或新建文件
+    int fd = open(name, O_WRONLY | O_CREAT | O_APPEND);
     if (fd >= 0)
     {
-        write(fd, data, len);
-        rt_kprintf("write sd done\n");
+        while(rt_ringbuffer_data_len(buff))
+        {
+            size = rt_ringbuffer_get(buff, (rt_uint8_t *)writebuffer, THRESHOLD);
+            write(fd, writebuffer, size);
+        }       
         close(fd);
-        return 0;
     }  
     else
-        return -1;
-}
-
-rt_int8_t read_sd(char *data, rt_uint16_t len)
-{
-    rt_int16_t size = 0;
-    /* 以读写方式打开文件，若不存在则创建该文件 */
-    int fd = open("/1.dat", O_RDONLY);
-    //打开成功
-    if (fd >= 0)
     {
-        size = read(fd, data, len);
-        close(fd);
-        if (size <= 0)
-            return -2;
-        else
-            return 0;
-    } 
-    else
         return -1;
+    }  
+    return 0;
 }

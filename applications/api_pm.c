@@ -25,6 +25,7 @@
 #include "api_timer.h"
 #include "api_hr.h"
 #include "drv_max30205.h"
+#include "api_sd.h"
 
 extern char g_sample[1024];
 extern rt_uint16_t g_sample_len;
@@ -38,6 +39,7 @@ const struct uart_execute g_pm_get_cmd[] =
     {"$ts_temp",          pm_ts_temp},
     {"$getgps",           pm_getgps},
     {"$ts",               pm_ts},
+    {"$ls",               pm_list_files},
 };
 
 const struct uart_execute g_pm_set_cmd[] = 
@@ -46,9 +48,9 @@ const struct uart_execute g_pm_set_cmd[] =
     {"$setbaudrate",      pm_set_baudrate},
     {"$settime",          pm_set_time},
     {"$setinterval",      pm_set_interval},
+    {"$setsave",          pm_set_save},
     {"$export",           pm_export},    
     {"$format",           pm_format},
-    {"$ls",               pm_list_files},
 };
 
 /* 上位机通讯相关:串口,信号量,接收缓存 */
@@ -184,7 +186,7 @@ void pm_uart_execute_thread_entry(void *parameter)
         {
             if (strcmp(g_pm_set_cmd[j].uart_execute_cmd, g_pm_uart_receive.argv[0]) == 0)
             {
-                if (SYSINFO.mode != MODE_SLEEP)
+                if (SYSINFO.mode == MODE_AUTO)
                 {
                     pm_printf("$err %d\r\n",ERR_MODE);
                     break;
@@ -277,7 +279,7 @@ int init_uart_pm(const char *name, rt_uint32_t bound)
  ******************************************************************************/
 void pm_checkin(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
-    pm_printf("$IoT_humansensor %d\r\n", SYSINFO.id); 
+    pm_printf("$humansensor %d\r\n", SYSINFO.id); 
 }
      
 void pm_set_id(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
@@ -407,6 +409,23 @@ void pm_set_interval (char *argv1, char *argv2, char *argv3, char *argv4, char *
     pm_printf("$interval %.1fs\r\n", SYSINFO.interval);  
 }
 
+void pm_set_save(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
+{
+    if (g_pm_uart_receive.argc != 2)
+    {
+        pm_printf("$err %d\r\n",ERR_PARA);
+        return;
+    }
+    
+    g_sysinfo.save = atoi(argv1);
+    if (config_sysinfo(&g_sysinfo) == -1)
+    {
+        pm_printf("$err %d\r\n",ERR_FLASH);
+        return;
+    }
+    pm_printf("$save %d\r\n", SYSINFO.save);  
+}
+
 /**
   * @brief   导出特定文件数据，输入指令时参数2必须填写，且填写正确的文件名（可通过$ls查询）     
   * @param        
@@ -472,40 +491,49 @@ void pm_format(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, 
 
 void pm_list_files(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
 {
+    /* sd卡存储状态读取 */
+    struct statfs fsstate;
+    float total = 0;
+    float free = 0;
+    if (statfs("/", &fsstate) != 0)
+    {
+        pm_printf("$err %d\r\n", ERR_SD);
+        return;
+    }
+    total = (long long)(fsstate.f_blocks) * (long long)(fsstate.f_bsize) / 1024.0 / 1024.0 / 1024.0;
+    free  = (long long)(fsstate.f_bfree)  * (long long)(fsstate.f_bsize) / 1024.0 / 1024.0 / 1024.0;
+    pm_printf("$memory:%.2fGB/%.2fGB\r\n", free, total);  
+
     /* sd卡内容读取 */
     DIR *dirp;
     struct dirent *d;   
     dirp = opendir("/");
     if (dirp == RT_NULL)
     {
-        rt_kprintf("open directory error!\n");
+        pm_printf("$err %d\r\n", ERR_SD);
+        return;
     }
-    else
+    rt_uint8_t flag = 0;
+    struct stat buf;
+    char name[SD_FILE_NAME_LEN] = "/";
+    /* 读取目录 */
+    while ((d = readdir(dirp)) != RT_NULL)
     {
-        pm_printf("files:\r\n");
-        rt_uint8_t flag = 0;
-        struct stat buf;
-        char name[SD_FILE_NAME_LEN] = "/";
-        /* 读取目录 */
-        while ((d = readdir(dirp)) != RT_NULL)
-        {
-            flag = 1;
-            memset(&buf, 0, sizeof(struct stat));
-            memset(name, 0, sizeof(name));
-            name[0] = '/';
-            strcat(name, d->d_name);
-            stat(name, &buf);
-            pm_printf("%-20s %-25lu\r\n", d->d_name, buf.st_size);
-//            pm_printf("%s\r\n", d->d_name);
-        }
-        if (flag == 0)
-        {
-            pm_printf("none\r\n");
-        }
-
-        /* 关闭目录 */
-        closedir(dirp);
-    }    
+        flag = 1;
+        memset(&buf, 0, sizeof(struct stat));
+        memset(name, 0, sizeof(name));
+        name[0] = '/';
+        strcat(name, d->d_name);
+        stat(name, &buf);
+        pm_printf("%-20s %-25lu\r\n", d->d_name, buf.st_size);
+    }
+    if (flag == 0)
+    {
+        pm_printf("none\r\n");
+    }
+    
+    /* 关闭目录 */
+    closedir(dirp);  
 }
 
 void pm_ds(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
@@ -515,15 +543,15 @@ void pm_ds(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char
     now = time(RT_NULL);
     struct tm *time;   
     time = localtime(&now);    
-    
-    char buff[80] = {0};
-    strftime(buff, 80, "%y-%m-%d %H:%M:%S", time);
         
-    pm_printf("\r\n========IoT_humansensor V"VERSION"========\r\n");
+    pm_printf("\r\n========humansensor V"VERSION"========\r\n");
     pm_printf("Hardver:"HARDWARE_VERSION"    ""Softver:"SOFTWARE_VERSION"\r\n");
-    pm_printf("%s\r\n", buff);
+    pm_printf("%02d-%02d-%02d %02d:%02d:%02d\r\n", 
+              time->tm_year - 100, time->tm_mon + 1, time->tm_mday,
+              time->tm_hour, time->tm_min, time->tm_sec);
     pm_printf("SN:%5d         bound:%ld\r\n", SYSINFO.id, SYSINFO.bound);
     pm_printf("mode:%d           interval:%.1f\r\n", SYSINFO.mode, SYSINFO.interval);
+    pm_printf("save:%d\r\n", SYSINFO.save);
 }
 
 void pm_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char *argv6)
@@ -547,11 +575,14 @@ void pm_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
             pm_printf("$err %d\r\n",ERR_FLASH);
             break;
         }
-        EN_GPS(1);
-        EN_TEMP(1);
-        EN_HR(1);
-        EN_SD(1);
         config_hwtimer(0, SYSINFO.interval);
+        if (SYSINFO.save == 1)
+        {
+            if (write_data_sd(g_sd_buff) != 0)
+            {
+                pm_printf("$err %d\r\n", ERR_SD);
+            }
+        }
         break;
     case MODE_AUTO:
         g_sysinfo.mode = MODE_AUTO;
@@ -560,18 +591,13 @@ void pm_set_mode(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5
             pm_printf("$err %d\r\n",ERR_FLASH);
             break;
         }
-        EN_GPS(1);
-        EN_TEMP(1);
-        EN_HR(1);
-        EN_SD(1); 
         config_hwtimer(1, SYSINFO.interval);
-        break;
-    case MODE_SM:
-        g_sysinfo.mode = MODE_SM;
-        if (config_sysinfo(&g_sysinfo) == -1)
+        if (SYSINFO.save == 1)
         {
-            pm_printf("$err %d\r\n",ERR_FLASH);
-            break;
+            if (write_data_sd(g_sd_buff) != 0)
+            {
+                pm_printf("$err %d\r\n", ERR_SD);
+            }
         }
         break;
     default:
@@ -642,7 +668,7 @@ void pm_getgps(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, 
 }
 
 /**
-  * @brief    读取hr,temp,gps数据并输出
+  * @brief    读取hr,temp,gps数据并输出，输出数据固定为58字节
               若hr或temp接收异常，则输出为0
   * @param        
   * @retval      
@@ -677,14 +703,14 @@ void pm_ts(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char
     if (rt_sem_take(g_ts_hr_sem, 500) == RT_EOK)
     {
         //等待后把数据发出来
-        pm_printf("%.1f %3d %3d %3d %lf %c %lf %c ", 
+        pm_printf("%.1f %3d %3d %3d %9.6lf %c %10.6lf %c ", 
                   temp, g_hr_data.systolic_pressure, g_hr_data.diastolic_pressure, g_hr_data.hr,
                   g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew);
     }
     else
     {
          //等待后把数据发出来
-        pm_printf("%.1f %3d %3d %3d %lf %c %lf %c\r\n", 
+        pm_printf("%.1f %3d %3d %3d %9.6lf %c %10.6lf %c\r\n", 
                   temp, 0, 0, 0,
                   g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew);
 
@@ -693,6 +719,21 @@ void pm_ts(char *argv1, char *argv2, char *argv3, char *argv4, char *argv5, char
     pm_printf("%02d-%02d-%02d %02d:%02d:%02d\r\n", 
               time->tm_year - 100, time->tm_mon + 1, time->tm_mday,
               time->tm_hour, time->tm_min, time->tm_sec);
+    
+    if (SYSINFO.save == 1)
+    {
+        /* 将数据存放到ringbuffer里 */
+        rt_mutex_take(g_ringbuffer_mutex, RT_WAITING_FOREVER);
+        char data[128] = {0};
+        rt_uint16_t data_len = 0;
+        data_len = sprintf(data,"%.1f %3d %3d %3d %9.6lf %c %10.6lf %c %02d-%02d-%02d %02d:%02d:%02d\r\n", 
+                           temp, g_hr_data.systolic_pressure, g_hr_data.diastolic_pressure, g_hr_data.hr,
+                           g_gps_data.latitude, g_gps_data.ns, g_gps_data.longitude, g_gps_data.ew,
+                           time->tm_year - 100, time->tm_mon + 1, time->tm_mday,
+                           time->tm_hour, time->tm_min, time->tm_sec);
+        rt_ringbuffer_put(g_sd_buff, (rt_uint8_t *)data, data_len);
+        rt_mutex_release(g_ringbuffer_mutex);        
+    }
 }
 
 
